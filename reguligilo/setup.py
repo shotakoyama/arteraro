@@ -6,5 +6,6 @@ setuptools.setup(
         packages = setuptools.find_packages(),
         entry_points = {
             'console_scripts':[
-                'reguligilo = reguligilo.main:main',
+                'reguligilo = reguligilo.main:encode_main',
+                'malreguligilo = reguligilo.main:decode_main',
             ]},)
