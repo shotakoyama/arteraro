@@ -1,6 +1,8 @@
 import sys
 import json
 import spacy
+from argparse import ArgumentParser
+from spacy_langdetect import LanguageDetector
 from erarigilo.en.util.token import EnToken
 from erarigilo.en.util.sent import EnSent
 from reguligilo.encode import Encoder
@@ -24,8 +26,12 @@ def convert_token(tok):
 
 
 class SpacyWrapper:
-    def __init__(self):
+    def __init__(self, remove_non_english=False, remove_tagger_and_ner=False):
         self.nlp = spacy.load('en')
+        if remove_tagger_and_ner:
+            self.nlp.pipeline = self.nlp.pipeline[1:2]
+        if remove_non_english:
+            self.nlp.add_pipe(LanguageDetector(), name = 'language_detector', last = True)
 
     def line_to_doc(self, line):
         line = line.strip()
@@ -60,19 +66,32 @@ class ReguligiloWrapper:
 
 
 def main():
-    nlp = SpacyWrapper()
+    parser = ArgumentParser()
+    parser.add_argument('--remove-non-english', action='store_true')
+    args = parser.parse_args()
+
+    nlp = SpacyWrapper(remove_non_english=args.remove_non_english)
     encoder = ReguligiloWrapper()
     for x in sys.stdin:
         doc = nlp.line_to_doc(x)
+        if args.remove_non_english and doc._.language['language'] != 'en':
+            continue
         sent = encoder.doc_to_sent(doc)
-        js = json.dumps(sent.encode(), ensure_ascii = False)
-        print(js)
+        if len(sent) > 0:
+            js = json.dumps(sent.encode(), ensure_ascii = False)
+            print(js)
 
 
 def tokenization():
-    nlp = SpacyWrapper()
-    nlp.nlp.pipeline = nlp.nlp.pipeline[:1]
+    parser = ArgumentParser()
+    parser.add_argument('--remove-non-english', action='store_true')
+    args = parser.parse_args()
+
+    nlp = SpacyWrapper(remove_non_english=args.remove_non_english, remove_tagger_and_ner=True)
     for x in sys.stdin:
         doc = nlp.line_to_doc(x)
-        print(' '.join([x.text for x in doc]))
+        if args.remove_non_english and doc._.language['language'] != 'en':
+            continue
+        if len(doc) > 0:
+            print(' '.join([x.text for x in doc]))
 
