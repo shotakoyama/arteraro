@@ -1,3 +1,4 @@
+import os
 from erarigilo.util.manager import *
 
 registory = {}
@@ -8,6 +9,11 @@ def register(name):
         registory[name] = generator_function
         return generator_function
     return register_generator
+
+
+def replace_environment_variable(path):
+    path = path.replace('${SGE_LOCALDIR}', os.environ['SGE_LOCALDIR'])
+    return path
 
 
 class Generator:

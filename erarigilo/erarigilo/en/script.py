@@ -2,36 +2,30 @@ from pathlib import Path
 from .util.script_util import *
 import yaml
 
-def resolve_path(key, value):
-    if key.endswith('path'):
-        value = str(Path(value).resolve())
-    return value
-
-def resolve_paths_in_dict(old_dct):
-    new_dct = {}
-    for name, dct in old_dct.items():
-        new_dct[name] = {}
-        for key, value in dct.items():
-            new_dct[name][key] = resolve_path(key, value)
-    return new_dct
-
-def copy_config(n):
-    with open('config.yaml') as f:
-        noise_list = yaml.safe_load(f)
-    with open(Path.cwd() / str(n) / 'config.yaml', 'w') as f:
-        noise_list = [resolve_paths_in_dict(dct) for dct in noise_list]
-        print(yaml.safe_dump(noise_list), file = f)
-
 class NoiserRunScript(RunScript):
     def __init__(self, n, config):
         self.n = n
         self.cwd = Path.cwd().resolve()
+        with open('config.yaml') as f:
+            self.noise_list = yaml.safe_load(f)
         super().__init__(config)
 
     def write(self):
         (self.cwd / str(self.n)).mkdir(exist_ok = True, parents = True)
         with open(self.cwd / str(self.n) / 'aeg.sh', 'w') as f:
             print(str(self), file = f)
+
+    def make_copy(self):
+        for i in range(len(self.noise_list)):
+            for name, dct in self.noise_list[i].items():
+                for key, value in dct.items():
+                    if key.endswith('path'):
+                        value = str(Path(value).resolve())
+                        target = '${{SGE_LOCALDIR}}/{}'.format(Path(value).name)
+                        self.append('cp {} "{}"'.format(value, target))
+                        self.noise_list[i][name][key] = target
+        with open(self.cwd / str(self.n) / 'config.yaml', 'w') as f:
+            print(yaml.safe_dump(self.noise_list), file = f)
 
     def make_noise(self):
         self.append('zcat {} \\'.format(' '.join([str(Path(x).resolve()) for x in self.config['preprocessed_gzip_list']])))
@@ -63,6 +57,8 @@ class NoiserRunScript(RunScript):
 
     def make(self):
         self.make_noise()
+        self.append('')
+        self.make_copy()
         self.append('')
         self.make_form()
         self.append('')
@@ -102,7 +98,6 @@ def main():
     for n in range(trials):
         run_script = NoiserRunScript(n, aeg_config)
         run_script.write()
-        copy_config(n)
 
     if Path('sub_config.yaml').exists():
         with open('sub_config.yaml') as f:

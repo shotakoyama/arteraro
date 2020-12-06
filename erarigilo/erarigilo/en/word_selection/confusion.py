@@ -26,7 +26,7 @@ class ConfusionGenerator(Generator):
     def __call__(self, dct):
         mean = dct['mean']
         std = dct['std']
-        model_path = dct['model_path']
+        model_path = replace_environment_variable(dct['model_path'])
         mistaker = ConfusionMistaker(model_path)
         manager = TokenWiseBetaManager(mean, std, mistaker)
         return manager

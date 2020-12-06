@@ -73,7 +73,7 @@ class SpellGenerator(Generator):
         std = dct['std']
         char_prob = dct['char_prob']
         n = dct['n']
-        score_path = dct['score_path']
+        score_path = replace_environment_variable(dct['score_path'])
         temp = dct['temp']
         mistaker = self.mistaker_class(char_prob, n, score_path, temp)
         manager = TokenWiseBetaManager(mean, std, mistaker)

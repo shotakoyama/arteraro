@@ -41,7 +41,7 @@ class InsOrthTokenWiseGenerator(Generator):
         mean = dct['mean']
         std = dct['std']
         penalty = dct['penalty']
-        dict_path = dct['dict_path']
+        dict_path = replace_environment_variable(dct['dict_path'])
         mistaker = self.mistaker_class(dict_path, penalty)
         manager = TokenWiseBetaManager(mean, std, mistaker)
         return manager
