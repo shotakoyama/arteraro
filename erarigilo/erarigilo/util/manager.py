@@ -17,9 +17,6 @@ class BetaManager(Manager):
         self.uniform_sampler = UniformSampler()
         self.beta_sampler = BetaSampler(mean, std)
 
-    def add_history(self, sent):
-        sent.history.append({'name' : self.mistaker.name})
-
     def get_threshold(self):
         threshold = self.beta_sampler()
         return threshold

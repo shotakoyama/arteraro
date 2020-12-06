@@ -92,7 +92,10 @@ def main():
                 history = []
                 for record in sent.history:
                     if 'threshold' in record:
-                        desc = '{}({})'.format(record['name'], record['threshold'])
+                        if 'char_threshold' in record:
+                            desc = '{}({}, {})'.format(record['name'], record['threshold'], record['char_threshold'])
+                        else:
+                            desc = '{}({})'.format(record['name'], record['threshold'])
                     elif 'ratio' in record:
                         desc = '{}<{}>'.format(record['name'], record['ratio'])
                     else:

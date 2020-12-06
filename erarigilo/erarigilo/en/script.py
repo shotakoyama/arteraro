@@ -1,104 +1,112 @@
-from argparse import ArgumentParser
 from pathlib import Path
 from .util.script_util import *
 import yaml
 
-class NoiserRunScript(Script):
-    def __init__(self, config, n):
+def resolve_path(key, value):
+    if key.endswith('path'):
+        value = str(Path(value).resolve())
+    return value
+
+def resolve_paths_in_dict(old_dct):
+    new_dct = {}
+    for name, dct in old_dct.items():
+        new_dct[name] = {}
+        for key, value in dct.items():
+            new_dct[name][key] = resolve_path(key, value)
+    return new_dct
+
+def copy_config(n):
+    with open('config.yaml') as f:
+        noise_list = yaml.safe_load(f)
+    with open(Path.cwd() / str(n) / 'config.yaml', 'w') as f:
+        noise_list = [resolve_paths_in_dict(dct) for dct in noise_list]
+        print(yaml.safe_dump(noise_list), file = f)
+
+class NoiserRunScript(RunScript):
+    def __init__(self, n, config):
         self.n = n
+        self.cwd = Path.cwd().resolve()
         super().__init__(config)
-        self.make_config()
 
-    def header(self):
-        self.append('set -ex')
-        if self.config.get('mode', None) == 'abci':
-            self.append('. /etc/profile.d/modules.sh')
-        self.append('') # 空行
-        cwd = Path.cwd().resolve()
-        self.dir_path = cwd / str(self.n)
-        self.append(f'cd {self.dir_path}')
-        if 'source_path' in self.config:
-            env = self.config['source_path']
-            self.append(f'. {env}')
-        self.append('') # 空行
+    def write(self):
+        (self.cwd / str(self.n)).mkdir(exist_ok = True, parents = True)
+        with open(self.cwd / str(self.n) / 'aeg.sh', 'w') as f:
+            print(str(self), file = f)
 
-    def spm_command(self, dropout = None):
-        spm_model = self.config['spm_model']
-        if dropout is None:
-            command = f'pyspm_encode --model_file {spm_model}'
-        else:
-            command = f'pyspm_encode --model_file {spm_model} --dropout {dropout}'
-        return command
+    def make_noise(self):
+        self.append('zcat {} \\'.format(' '.join([str(Path(x).resolve()) for x in self.config['preprocessed_gzip_list']])))
+        if 'corpus_size' in self.config:
+            self.append('   | head -n {} \\'.format(self.config['corpus_size']))
+        self.append('   | parallel --pipe -j {} -k --L {} "OMP_NUM_THREADS=1 en_erg_noise" \\'.format(
+            self.config['threads'], self.config['lines']))
+        self.append('   | progress > ${SGE_LOCALDIR}/noised.txt')
+
+    def make_form(self):
+        self.append('cat ${SGE_LOCALDIR}/noised.txt \\')
+        self.append('   | parallel --pipe -j {} -k --L {} en_erg_form \\'.format(
+            self.config['threads'], self.config.get('forming_lines', self.config['lines'])))
+        self.append('   | progress > ${SGE_LOCALDIR}/formed.txt')
+        self.append('rm ${SGE_LOCALDIR}/noised.txt')
+
+    def make_tokenize(self):
+        self.append('cat ${SGE_LOCALDIR}/formed.txt \\')
+        self.append('   | cut -f 1 \\')
+        self.append('   | parallel --pipe -j {} -k --L {} "{}" > ${{SGE_LOCALDIR}}/src.txt &'.format(
+            self.config['threads'], self.config.get('tokenization_lines', self.config['lines']),
+            spm_command(self.config['spm_model'], self.config.get('src_dropout', None))))
+        self.append('cat ${SGE_LOCALDIR}/formed.txt \\')
+        self.append('   | cut -f 2 \\')
+        self.append('   | parallel --pipe -j {} -k --L {} "{}" > ${{SGE_LOCALDIR}}/trg.txt &'.format(
+            self.config['threads'], self.config.get('tokenization_lines', self.config['lines']),
+            spm_command(self.config['spm_model'], self.config.get('trg_dropout', None))))
+        self.append('wait')
 
     def make(self):
-        self.append('mkdir ${SGE_LOCALDIR}/tmp')
-        self.append('TMPDIR=${SGE_LOCALDIR}/tmp')
-
-        # noise
-        lines = self.config['lines']
-        threads = self.config['threads']
-        preprocessed = self.config['preprocessed']
-        self.append(f'zcat {preprocessed} \\')
-        if 'corpus_size' in self.config:
-            corpus_size = self.config['corpus_size']
-            self.append(f'\t| head -n {corpus_size} \\')
-        self.append(f'\t| parallel --pipe -j {threads} -k --L {lines} "OMP_NUM_THREADS=1 en_erg_noise" \\')
-        self.append(f'\t| progress > ${{SGE_LOCALDIR}}/noised.txt')
-
-        # form
-        form_lines = self.config.get('form_lines', lines)
-        self.append('cat ${SGE_LOCALDIR}/noised.txt \\')
-        self.append(f'\t| parallel --pipe -j {threads} -k --L {form_lines} en_erg_form \\')
-        self.append(f'\t| progress > ${{SGE_LOCALDIR}}/formed.txt')
-        self.append(f'rm ${{SGE_LOCALDIR}}/noised.txt')
-
-        # tokenize
-        tokenize_lines = self.config.get('tokenize_lines', lines)
-        src_dropout = self.config.get('src_dropout', None)
-        trg_dropout = self.config.get('trg_dropout', None)
-        src_spm_command = self.spm_command(src_dropout)
-        trg_spm_command = self.spm_command(trg_dropout)
-        self.append(f'cat ${{SGE_LOCALDIR}}/formed.txt | cut -f 1 | parallel --pipe -j {threads} -k --L {tokenize_lines} "{src_spm_command}" > ${{SGE_LOCALDIR}}/src.txt &')
-        self.append(f'cat ${{SGE_LOCALDIR}}/formed.txt | cut -f 2 | parallel --pipe -j {threads} -k --L {tokenize_lines} "{trg_spm_command}" > ${{SGE_LOCALDIR}}/trg.txt &')
-        self.append('wait')
-        min_len = self.config['min_len']
-        max_len = self.config['max_len']
-        self.append(f'erg_paste ${{SGE_LOCALDIR}}/src.txt ${{SGE_LOCALDIR}}/trg.txt --min-len {min_len} --max-len {max_len} | progress | pigz -c > train.gz')
-
-    def make_config(self):
-        with open(self.dir_path / 'config.yaml', 'w') as f:
-            dct = {'noiser' : self.config['noiser']}
-            print(yaml.safe_dump(dct), file = f)
+        self.make_noise()
+        self.append('')
+        self.make_form()
+        self.append('')
+        self.make_tokenize()
+        self.append('')
+        self.append('erg_paste ${{SGE_LOCALDIR}}/src.txt ${{SGE_LOCALDIR}}/trg.txt --min-len {} --max-len {} \\'.format(
+            self.config['min_len'], self.config['max_len']))
+        self.append('   | progress | pigz -c > train.gz')
 
 
 class NoiserSubScript(SubScript):
+    def __init__(self, trials, config):
+        self.trials = trials
+        super().__init__(config)
+
+    def write(self):
+        with open(Path.cwd().resolve() / 'sub.sh', 'w') as f:
+            print(str(self), file = f)
+
     def make(self):
-        group = self.config['group']
-        trials = self.config['trials']
-        for n in range(trials):
-            command = f'{n}/run.sh'
-            h_rt = self.config['h_rt']
-            self.add(command, group, h_rt)
+        for n in range(self.trials):
+            self.append(qsub_command(
+                f'{n}/aeg.sh',
+                self.config.get('group', None),
+                self.config['h_rt'],
+                self.config.get('node', 'rt_C.large'),
+                self.config.get('num_node', 1),
+                {'WORKDIR': '"${{BASEDIR}}/{}"'.format(n), 'SGE_QSUB': 'yes'}))
 
 
 def main():
-    parser = ArgumentParser()
-    parser.add_argument('-c', '--config', dest = 'config', default = 'config.yaml')
-    args = parser.parse_args()
+    with open('aeg_config.yaml') as f:
+        aeg_config = yaml.safe_load(f)
 
-    with open(args.config) as f:
-        config = yaml.safe_load(f)
-
-    trials = config['trials']
+    trials = aeg_config['trials']
     cwd = Path.cwd()
     for n in range(trials):
-        path = cwd / str(n)
-        path.mkdir(exist_ok = True, parents = True)
-        run_script = NoiserRunScript(config, n)
-        with open(path / 'run.sh', 'w') as f:
-            print(str(run_script), file = f)
+        run_script = NoiserRunScript(n, aeg_config)
+        run_script.write()
+        copy_config(n)
 
-    sub_script = NoiserSubScript(config)
-    with open('sub.sh', 'w') as f:
-        print(str(sub_script), file = f)
+    if Path('sub_config.yaml').exists():
+        with open('sub_config.yaml') as f:
+            sub_config = yaml.safe_load(f)
+        sub_script = NoiserSubScript(trials, sub_config)
+        sub_script.write()
 

@@ -13,7 +13,7 @@ def main():
         config = yaml.safe_load(f)
 
     generator_list = []
-    for dct in config['noiser']:
+    for dct in config:
         for key, value in dct.items():
             generator_list.append((registory[key], value))
     noiser = EnNoiser(*generator_list)

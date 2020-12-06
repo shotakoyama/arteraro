@@ -1,7 +1,8 @@
 from erarigilo.util import *
 import random as rd
 
-mask = chr(0x25a8)
+char_mask = chr(0x25a1)
+word_mask = chr(0x25a8)
 
 class MaskMistaker(TokenWiseMistaker):
     def __init__(self):
@@ -11,7 +12,7 @@ class MaskMistaker(TokenWiseMistaker):
         return token.word() != ''
 
     def noise(self, token):
-        token.org = mask
+        token.org = word_mask
         return token
 
     def __call__(self, token):
@@ -21,20 +22,23 @@ class MaskMistaker(TokenWiseMistaker):
 
 
 class BetterMaskMistaker(MaskMistaker):
-    def __init__(self, threshold_mean, threshold_std):
+    def __init__(self, p, threshold_mean, threshold_std):
         super().__init__()
         self.beta_sampler = BetaSampler(threshold_mean, threshold_std)
+        self.geometric_sampler = GeometricSampler(p)
         self.uniform_sampler = UniformSampler()
 
     def noise(self, token, thres):
         if self.uniform_sampler() < thres:
             word = token.word()
-            lst = rd.sample(range(len(word) + 1), k = 2)
-            lst.sort()
-            start, end = lst
-            token.org = word[:start] + mask + word[end:]
+            num_iter = self.geometric_sampler()
+            for _ in range(num_iter):
+                if len(word) > 1:
+                    pos = rd.randrange(len(word) - 1)
+                    word = word[:pos] + char_mask + word[pos+1:]
+            token.org = word
         else:
-            token.org = mask
+            token.org = word_mask
         return token
 
     def __call__(self, token, thres):
@@ -61,21 +65,18 @@ class MaskApplier:
 
 
 class BetterMaskApplier:
-    def apply(self, sent, lottery):
-        # threshold
-        thres = self.mistaker.beta_sampler()
-
+    def apply(self, sent, lottery, char_threshold):
         # apply mask mistakes
         for index in range(len(sent)):
 
             # apply for original tokens
             if self.mistaker.cond(sent[index]) and lottery():
-                sent[index] = self.mistaker(sent[index], thres)
+                sent[index] = self.mistaker(sent[index], char_threshold)
 
             # apply for added tokens
             for pos in range(len(sent[index].addition)):
                 if self.mistaker.cond(sent[index].addition[pos]) and lottery():
-                    sent[index].addition[pos] = self.mistaker(sent[index].addition[pos], thres)
+                    sent[index].addition[pos] = self.mistaker(sent[index].addition[pos], char_threshold)
 
         return sent
 
@@ -85,7 +86,13 @@ class MaskManager(MaskApplier, TokenWiseBetaManager):
 
 
 class BetterMaskManager(BetterMaskApplier, TokenWiseBetaManager):
-    pass
+    def __call__(self, sent):
+        word_threshold = self.get_threshold()
+        char_threshold = self.mistaker.beta_sampler()
+        lottery = lambda : self.uniform_sampler() < word_threshold
+        sent = self.apply(sent, lottery, char_threshold)
+        sent.history.append({'name' : self.mistaker.name, 'threshold' : round(word_threshold, 2), 'char_threshold' : round(char_threshold, 2)})
+        return sent
 
 
 class MaskGenerator(Generator):
@@ -95,13 +102,14 @@ class MaskGenerator(Generator):
     def __call__(self, dct):
         mean = dct['mean']
         std = dct['std']
+        p = dct.get('p', 0.9)
         threshold_mean = dct.get('threshold_mean', 0.0)
         threshold_std = dct.get('threshold_std', 0.0)
         if threshold_mean == 0.0:
             mistaker = MaskMistaker()
             manager = MaskManager(mean, std, mistaker)
         else:
-            mistaker = BetterMaskMistaker(threshold_mean, threshold_std)
+            mistaker = BetterMaskMistaker(p, threshold_mean, threshold_std)
             manager = BetterMaskManager(mean, std, mistaker)
         return manager
 

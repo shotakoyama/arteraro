@@ -1,5 +1,22 @@
 from pathlib import Path
 
+def spm_command(spm_model, dropout = None):
+    line = 'pyspm_encode --model_file {}'.format(Path(spm_model).resolve())
+    if dropout is not None:
+        line += ' --dropout {dropout}'
+    return line
+
+def qsub_command(code_path, group, h_rt, node, num_node, var_dict=None):
+    line = 'qsub'
+    if group is not None:
+        line += f' -g {group}'
+    line += f' -l {node}={num_node}'
+    line += f' -l h_rt={h_rt}'
+    if var_dict is not None:
+        line += ' -v ' + ','.join([f'{key}={value}' for key, value in var_dict.items()])
+    line += f' {code_path}'
+    return line
+
 class Script(list):
     def __init__(self, config):
         super().__init__()
@@ -10,39 +27,45 @@ class Script(list):
     def make(self):
         raise NotImplementedError
 
-    def header(self):
-        pass
-
     def __str__(self):
         return '\n'.join(self)
 
 
 class RunScript(Script):
+    def header_workdir(self):
+        self.append('if [ -z $WORKDIR ] ; then')
+        self.append('   WORKDIR=`dirname $0`')
+        self.append('fi')
+        self.append('cd $WORKDIR')
+
+    def header_environment(self):
+        self.append('if [ -n $SGE_QSUB ] ; then')
+        self.append('   . /etc/profile.d/modules.sh')
+        if 'source_path' in self.config:
+            self.append('   . {}'.format(Path(self.config['source_path']).resolve()))
+        self.append('fi')
+
+    def header_localdir(self):
+        self.append('if [ -z $SGE_LOCALDIR ] ; then')
+        self.append('   mkdir tmp')
+        self.append('   SGE_LOCALDIR=tmp')
+        self.append('fi')
+
     def header(self):
         self.append('set -ex')
-        if self.config.get('mode', None) == 'abci':
-            self.append('. /etc/profile.d/modules.sh')
-        self.append('') # 空行
-        cwd = Path.cwd().resolve()
-        self.append(f'cd {cwd}')
-        if 'source_path' in self.config:
-            env = self.config['source_path']
-            self.append(f'. {env}')
-        self.append('') # 空行
+        self.append('') # blank line
+        self.header_workdir()
+        self.append('')
+        self.header_environment()
+        self.append('')
+        self.header_localdir()
+        self.append('')
 
 
 class SubScript(Script):
-    def add(self, command, group, h_rt, node = 'rt_C.large', num_node = 1, var_dict = None):
-
-        qsub_command = 'qsub'
-        if group is not None:
-            qsub_command += f' -g {group}'
-        qsub_command += f' -l {node}={num_node}'
-        qsub_command += f' -l h_rt={h_rt}'
-        if var_dict is not None:
-            v = ','.join([f'{key}={value}' for key, value in var_dict.items()])
-            qsub_command += f' {v}'
-        qsub_command += f' {command}'
-
-        self.append(qsub_command)
+    def header(self):
+        self.append('set -ex')
+        self.append('')
+        self.append('BASEDIR=$(cd $(dirname $0) ; pwd)')
+        self.append('')
 

@@ -47,7 +47,7 @@ def train():
     parser.add_argument('--character_coverage', type = float, default = 1.0)
     parser.add_argument('--user_defined_symbols', default = '')
     parser.add_argument('--normalization_rule_name', default = 'identity')
-    parser.add_argument('--required_chars', default = '▨')
+    parser.add_argument('--required_chars', default = '□▨')
     args = parser.parse_args()
     spm.SentencePieceTrainer.train(
             input = args.input,
