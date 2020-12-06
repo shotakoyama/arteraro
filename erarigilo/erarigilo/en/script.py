@@ -56,9 +56,9 @@ class NoiserRunScript(RunScript):
         self.append('wait')
 
     def make(self):
-        self.make_noise()
-        self.append('')
         self.make_copy()
+        self.append('')
+        self.make_noise()
         self.append('')
         self.make_form()
         self.append('')

@@ -8,13 +8,13 @@ class FalsLiterNoiser:
         self.n = n
         self.score = np.memmap(score_path,
                 dtype = np.float32,
-                mode = 'r+',
+                mode = 'r',
                 shape = tuple([len(self.vocab)] * (2 * n + 1)))
         self.temp = temp
 
     def get_dist(self, src, trg):
         src = tuple(self.vocab.index(char) for char in src)
-        dist = self.score[src]
+        dist = np.array(self.score[src].tolist())
         if trg is not None:
             dist[self.vocab.index(trg)] = -float('Inf')
         dist[[0, 1]] = -float('Inf')
