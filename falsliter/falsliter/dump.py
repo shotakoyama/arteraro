@@ -1,6 +1,5 @@
 from falsliter.vocabulary import Vocabulary
 from falsliter.task import Task
-from falsliter.vocabulary import Vocabulary
 
 from argparse import ArgumentParser
 from itertools import product
