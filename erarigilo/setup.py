@@ -11,6 +11,5 @@ setuptools.setup(
                 'en_erg_tokenizer = erarigilo.en.preprocess:tokenization',
                 'en_erg_preprocess = erarigilo.en.preprocess:main',
                 'en_erg_noise = erarigilo.en.noise:main',
-                'en_erg_script = erarigilo.en.script:main',
                 'en_erg_pj = erarigilo.en.pj:main',
             ]},)
