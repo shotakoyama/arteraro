@@ -34,9 +34,10 @@ def command_list(mode, corpora, sample, spm_model, src_dropout, trg_dropout, src
     return command_list
 
 class FinetuneDataRunScript(RunScript):
-    def __init__(self, config, n):
+    def __init__(self, config, n, first_index):
         self.n = n
-        super().__init__(config)
+        self.first_index = first_index
+        super().__init__(config, use_localdir = True)
 
     def make_prepare(self, src, trg):
         self += [
@@ -66,13 +67,21 @@ class FinetuneDataRunScript(RunScript):
         valid_pref = self.config['dataset']['valid_pref']
         valid_pref = str(Path(valid_pref).resolve())
         dest_dir = 'data-bin'
-        src_dict_path = self.config.get('src_dict_path', None)
-        preprocess_command = fairseq_preprocess_command(train_pref, valid_pref, dest_dir, src_dict_path, 'preprocess_stdout.log')
+        if (self.first_index is not None) and (self.n != self.first_index):
+            src_dict_path = '{}/data-bin/dict.src.txt'.format(self.first_index)
+            src_dict_path = str(Path(src_dict_path).resolve())
+        else:
+            src_dict_path = self.config.get('src_dict_path',  None)
+        preprocess_command = fairseq_preprocess_command(train_pref, valid_pref, dest_dir, src_dict_path)
         self.append(preprocess_command)
 
 class FinetuneDataSubScript(SubScript):
+    def __init__(self, config, sub_config, indices):
+        self.indices = indices
+        super().__init__(config, sub_config)
+
     def make(self):
-        for n in range(self.config['trial']):
+        for n in self.indices:
             code_path = (Path(str(n)) / 'data.sh').resolve()
             group = self.sub_config['group']
             h_rt = self.sub_config['h_rt']
@@ -85,15 +94,26 @@ class FinetuneDataSubScript(SubScript):
 
 def main():
     config = load_config()
+    if 'src_dict_path' in config:
+        first_trial = None
+    else:
+        first_trial = config.get('first_trial', 0)
     for n in range(config['trial']):
         Path(str(n)).mkdir(exist_ok=True)
-        script = FinetuneDataRunScript(config, n)
+        script = FinetuneDataRunScript(config, n, first_trial)
         with open(Path(str(n)) / 'data.sh', 'w') as f:
             print(script, file = f)
 
     if check_sub_config():
         sub_config = load_sub_config()
-        sub_script = FinetuneDataSubScript(config, sub_config)
+        indices = [n for n in range(config['trial'])]
+        if first_trial is not None:
+            indices = [n for n in indices if n != first_trial]
+            sub_script = FinetuneDataSubScript(config, sub_config, [first_trial])
+            with open('first_sub.sh', 'w') as f:
+                print(sub_script, file = f)
+
+        sub_script = FinetuneDataSubScript(config, sub_config, indices)
         with open('sub.sh', 'w') as f:
             print(sub_script, file = f)
 

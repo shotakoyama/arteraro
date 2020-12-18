@@ -1,4 +1,4 @@
-def fairseq_preprocess_command(train_pref, valid_pref, dest_dir, src_dict_path, log_path):
+def fairseq_preprocess_command(train_pref, valid_pref, dest_dir, src_dict_path):
     lst = ['fairseq-preprocess',
             '--source-lang src',
             '--target-lang trg',
@@ -8,13 +8,26 @@ def fairseq_preprocess_command(train_pref, valid_pref, dest_dir, src_dict_path, 
             '--workers 40']
     if src_dict_path is not None:
         lst.append('--srcdict {}'.format(src_dict_path))
-    lst.append('--joined-dictionary > {}'.format(log_path))
+    lst.append('--joined-dictionary')
+    return ' '.join(lst)
+
+def fairseq_interactive_command(data_bin, path, beam, buffer_size, batch_size, lenpen, source, output):
+    lst = ['fairseq-interactive',
+            str(data_bin),
+            '--path {}'.format(path),
+            '--beam {}'.format(beam),
+            '--nbest {}'.format(beam),
+            '--buffer-size {}'.format(buffer_size),
+            '--batch-size {}'.format(batch_size),
+            '--lenpen {}'.format(lenpen),
+            '< {}'.format(source),
+            '> {}'.format(output)]
     return ' '.join(lst)
 
 class FairseqTrainCommand(list):
-    def __init__(self, data_bin_path, log=None):
+    def __init__(self, data_bin_path, log_file=None):
         super().__init__(['fairseq-train', data_bin_path])
-        self.log = log
+        self.log_file = log_file
 
     def restore_file(self, restore_file):
         self.append('--restore-file {}'.format(restore_file))
@@ -102,9 +115,9 @@ class FairseqTrainCommand(list):
         self.append('--reset-lr-scheduler')
 
     def __str__(self):
-        if self.log is None:
+        if self.log_file is None:
             lst = self
         else:
-            lst = self + ['| tee {}.log'.format(self.log)]
+            lst = self + ['2>&1 | tee {}.log'.format(self.log_file)]
         return ' '.join(lst)
 

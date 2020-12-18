@@ -14,6 +14,10 @@ class Script(list):
         return '\n'.join(self)
 
 class RunScript(Script):
+    def __init__(self, config, use_localdir=False):
+        self.use_localdir = use_localdir
+        super().__init__(config)
+
     def header_workdir(self):
         self += [
             'if [ -z $WORKDIR ] ; then',
@@ -44,8 +48,9 @@ class RunScript(Script):
         self.append('')
         self.header_environment()
         self.append('')
-        self.header_localdir()
-        self.append('')
+        if self.use_localdir:
+            self.header_localdir()
+            self.append('')
 
 class SubScript(Script):
     def __init__(self, config, sub_config):

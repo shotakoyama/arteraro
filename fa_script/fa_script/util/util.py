@@ -20,3 +20,8 @@ def load_sub_config(path = None):
         config = yaml.safe_load(f)
     return config
 
+def load_eval_config(config):
+    eval_config_path = config['eval_config']
+    with open(eval_config_path) as f:
+        config = yaml.safe_load(f)
+    return config
