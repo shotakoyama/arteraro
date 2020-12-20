@@ -47,8 +47,9 @@ class Bea19GenerateSubScript(SubScript):
             node = self.sub_config['generate'].get('node', 'rt_G.small')
             num_node = self.sub_config['generate'].get('num_node', 1)
             workdir = str(base_dir)
+            p = self.sub_config['generate'].get('p', None)
             var_dict = {'WORKDIR': workdir, 'SGE_QSUB': 'yes'}
-            command = qsub_command(code_path, group, h_rt, node, num_node, var_dict=var_dict)
+            command = qsub_command(code_path, group, h_rt, node, num_node, p=p, var_dict=var_dict)
             self.append(command)
 
 def main():

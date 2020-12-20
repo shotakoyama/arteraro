@@ -58,6 +58,7 @@ class FinetuneTrainSubScript(SubScript):
             node = self.sub_config['train'].get('node', 'rt_F')
             num_node = self.sub_config['train'].get('num_node', 1)
             workdir = '"${{BASEDIR}}/{}"'.format(n)
+            p = self.sub_config['train'].get('p', None)
             var_dict = {'WORKDIR': workdir, 'SGE_QSUB': 'yes'}
             command = qsub_command(code_path, group, h_rt, node, num_node, var_dict=var_dict)
             self.append(command)

@@ -1,9 +1,11 @@
 from pathlib import Path
 
-def qsub_command(code_path, group, h_rt, node, num_node, var_dict=None):
+def qsub_command(code_path, group, h_rt, node, num_node, p=None, var_dict=None):
     line = 'qsub'
     if group is not None:
         line += ' -g {}'.format(group)
+    if p is not None:
+        line += ' -p {}'.format(p)
     line += ' -l {}={}'.format(node, num_node)
     line += ' -l h_rt={}'.format(h_rt)
     if var_dict is not None:
