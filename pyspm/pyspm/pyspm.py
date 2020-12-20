@@ -30,8 +30,8 @@ def encode():
 def decode():
     parser = ArgumentParser()
     parser.add_argument('--model_file')
-    args = parse_args()
-    sp = spm.SentencePieceProcesser(model_file = args.model_file)
+    args = parser.parse_args()
+    sp = spm.SentencePieceProcessor(model_file = args.model_file)
     for x in sys.stdin:
         x = x.strip()
         x = sp.decode(x.split(' '))
