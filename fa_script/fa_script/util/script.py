@@ -25,13 +25,16 @@ class RunScript(Script):
             'fi',
             'cd $WORKDIR']
 
+    def append_source_path(self):
+        if 'source_path' in self.config:
+            path = Path(self.config['source_path']).resolve()
+            self.append('   . {}'.format(path))
+
     def header_environment(self):
         self += [
             'if [ -n $SGE_QSUB ] ; then',
             '   . /etc/profile.d/modules.sh']
-        if 'source_path' in self.config:
-            path = Path(self.config['source_path']).resolve()
-            self.append('   . {}'.format(path))
+        self.append_source_path()
         self.append('fi')
 
     def header_localdir(self):

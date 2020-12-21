@@ -21,6 +21,7 @@ def fairseq_interactive_command(data_bin, path, beam, buffer_size, batch_size, l
             '--batch-size {}'.format(batch_size),
             '--lenpen {}'.format(lenpen),
             '< {}'.format(source),
+            '| fairseq_to_yaml',
             '> {}'.format(output)]
     return ' '.join(lst)
 
