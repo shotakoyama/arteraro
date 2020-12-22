@@ -14,16 +14,13 @@ class Script(list):
         return '\n'.join(self)
 
 class RunScript(Script):
-    def __init__(self, config, use_localdir=False):
+    def __init__(self, config, work_dir, use_localdir=False):
+        self.work_dir = work_dir
         self.use_localdir = use_localdir
         super().__init__(config)
 
     def header_workdir(self):
-        self += [
-            'if [ -z $WORKDIR ] ; then',
-            '   WORKDIR=`dirname $0`',
-            'fi',
-            'cd $WORKDIR']
+        self.append('cd {}'.format(self.work_dir))
 
     def append_source_path(self):
         if 'source_path' in self.config:
@@ -62,7 +59,5 @@ class SubScript(Script):
 
     def header(self):
         self.append('set -ex')
-        self.append('')
-        self.append('BASEDIR=$(cd $(dirname $0) ; pwd)')
         self.append('')
 

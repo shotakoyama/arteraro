@@ -11,7 +11,6 @@ class NoiserRunScript(RunScript):
         super().__init__(config)
 
     def write(self):
-        (self.cwd / str(self.n)).mkdir(exist_ok = True, parents = True)
         with open(self.cwd / str(self.n) / 'aeg.sh', 'w') as f:
             print(str(self), file = f)
 
@@ -24,6 +23,7 @@ class NoiserRunScript(RunScript):
                         target = '${{SGE_LOCALDIR}}/{}'.format(Path(value).name)
                         self.append('cp {} "{}"'.format(value, target))
                         self.noise_list[i][name][key] = target
+        (self.cwd / str(self.n)).mkdir(exist_ok = True, parents = True)
         with open(self.cwd / str(self.n) / 'config.yaml', 'w') as f:
             print(yaml.safe_dump(self.noise_list), file = f)
 

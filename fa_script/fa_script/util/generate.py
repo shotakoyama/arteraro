@@ -36,7 +36,7 @@ def make_ensemble_base_dir(dataset, beam, lenpen):
     return Path('ensemble').resolve() / dataset / str(beam) / str(int(lenpen * 100))
 
 class GenerateRunScript(RunScript):
-    def __init__(self, config, checkpoint, beam, batch_size, lenpen, source, output, select):
+    def __init__(self, config, base_dir, checkpoint, beam, batch_size, lenpen, source, output, select):
         self.checkpoint = checkpoint
         self.beam = beam
         self.batch_size = batch_size
@@ -44,7 +44,7 @@ class GenerateRunScript(RunScript):
         self.source = source
         self.output = output
         self.select = select
-        super().__init__(config)
+        super().__init__(config, base_dir)
 
     def make(self):
         data_bin = self.get_data_bin()

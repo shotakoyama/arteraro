@@ -20,9 +20,9 @@ def ensemble_checkpoint_path(config):
 
 def write_run_script(config, base_dir, checkpoint_path, beam, batch_size, lenpen, source):
     script_path = base_dir / 'gen_bea19.sh'
-    output = base_dir / 'bea19_valid.yaml'
-    select = base_dir / 'bea19_valid.txt'
-    script = Bea19GenerateRunScript(config, checkpoint_path, beam, batch_size, lenpen, source, output, select)
+    output = 'bea19_valid.yaml'
+    select = 'bea19_valid.txt'
+    script = Bea19GenerateRunScript(config, base_dir, checkpoint_path, beam, batch_size, lenpen, source, output, select)
     with open(script_path, 'w') as f:
         f.write(str(script))
 

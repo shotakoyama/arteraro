@@ -6,9 +6,9 @@ from fa_script.util.script import RunScript, SubScript
 from fa_script.util.fairseq import FairseqTrainCommand
 
 class FinetuneTrainRunScript(RunScript):
-    def __init__(self, config, n):
+    def __init__(self, config, n, base_dir):
         self.n = n
-        super().__init__(config, use_localdir=True)
+        super().__init__(config, base_dir, use_localdir=True)
 
     def make(self):
         indices = self.config['data_indices'][self.n]
@@ -16,12 +16,13 @@ class FinetuneTrainRunScript(RunScript):
             self.append('mkdir -p ${{SGE_LOCALDIR}}/{}'.format(n))
         for n, index in enumerate(indices, start = 1):
             data_path = Path(self.config['data']).resolve() / str(index) / 'data-bin'
-            self.append('cp -r {} ${{SGE_LOCALDIR}}/{}'.format(data_path, n))
-        data_bin_list = ['${{SGE_LOCALDIR}}/{}/data-bin'.format(n) for n in range(1, len(indices) + 1)]
-        data_bin_list = ':'.join(data_bin_list)
+            self.append('cp -r {} ${{SGE_LOCALDIR}}/{} &'.format(data_path, n))
+        self.append('wait')
 
         self.append('')
 
+        data_bin_list = ['${{SGE_LOCALDIR}}/{}/data-bin'.format(n) for n in range(1, len(indices) + 1)]
+        data_bin_list = ':'.join(data_bin_list)
         command = FairseqTrainCommand(data_bin_list, 'train')
         if 'restore_file' in self.config:
             command.restore_file(self.config['restore_file'][self.n])
@@ -52,30 +53,36 @@ class FinetuneTrainRunScript(RunScript):
 class FinetuneTrainSubScript(SubScript):
     def make(self):
         for n in range(len(self.config['seed_list'])):
-            code_path = (Path(str(n)) / 'expt.sh').resolve()
+            code_path = (Path(str(n)) / 'finetune.sh').resolve()
             group = self.sub_config['group']
             h_rt = self.sub_config['train']['h_rt']
             node = self.sub_config['train'].get('node', 'rt_F')
             num_node = self.sub_config['train'].get('num_node', 1)
             workdir = '"${{BASEDIR}}/{}"'.format(n)
             p = self.sub_config['train'].get('p', None)
-            var_dict = {'WORKDIR': workdir, 'SGE_QSUB': 'yes'}
+            var_dict = {'SGE_QSUB': 'yes'}
             command = qsub_command(code_path, group, h_rt, node, num_node, var_dict=var_dict)
             self.append(command)
 
-
-def main():
+def run():
     config = load_config()
     seed_list = config['seed_list']
     for n in range(len(seed_list)):
-        Path(str(n)).mkdir(exist_ok=True)
-        script = FinetuneTrainRunScript(config, n)
-        with open(Path(str(n)) / 'train.sh', 'w') as f:
+        base_dir = Path(str(n))
+        base_dir.mkdir(exist_ok=True)
+        script = FinetuneTrainRunScript(config, n, base_dir)
+        with open(Path(str(n)) / 'finetune.sh', 'w') as f:
             print(script, file = f)
 
+def sub():
+    config = load_config()
+    sub_config = load_sub_config()
+    sub_script = FinetuneTrainSubScript(config, sub_config)
+    with open('finetune.sh', 'w') as f:
+        print(sub_script, file=f)
+
+def main():
+    run()
     if check_sub_config():
-        sub_config = load_sub_config()
-        sub_script = FinetuneTrainSubScript(config, sub_config)
-        with open('train.sh', 'w') as f:
-            print(sub_script, file=f)
+        sub()
 
