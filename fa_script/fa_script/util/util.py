@@ -31,6 +31,11 @@ def load_config_and_eval_config():
     eval_config = load_eval_config(config)
     return config, eval_config
 
+def load_config_and_sub_config():
+    config = load_config()
+    sub_config = load_sub_config()
+    return config, sub_config
+
 def load_config_and_sub_config_and_eval_config():
     config, eval_config = load_config_and_eval_config()
     sub_config = load_sub_config()

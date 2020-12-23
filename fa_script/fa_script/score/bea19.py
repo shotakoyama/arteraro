@@ -1,5 +1,5 @@
 from pathlib import Path
-from fa_script.util.util import load_config, check_sub_config, load_sub_config, load_eval_config
+from fa_script.util.util import load_config, check_sub_config, load_config_and_eval_config, load_config_and_sub_config_and_eval_config
 from fa_script.util.script import RunScript
 from fa_script.util.generate import make_prod, make_prod_without_index_and_epoch, make_base_dir, make_ensemble_base_dir
 from fa_script.util.output import SingleScoreSubScript, EnsembleScoreSubScript

@@ -9,13 +9,13 @@ def run():
         base_dir = Path(str(n)).resolve()
         base_dir.mkdir(exist_ok=True)
         script = TrainRunScript(config, n, base_dir)
-        with open(base_dir / 'finetune.sh', 'w') as f:
+        with open(base_dir / 'pretrain.sh', 'w') as f:
             f.write(str(script))
 
 def sub():
     config, sub_config = load_config_and_sub_config()
-    sub_script = TrainSubScript(config, sub_config, 'finetune')
-    with open('finetune.sh', 'w') as f:
+    sub_script = TrainSubScript(config, sub_config, 'pretrain')
+    with open('pretrain.sh', 'w') as f:
         f.write(str(sub_script))
 
 def main():

@@ -12,8 +12,8 @@ class Bea19RescoreRunScript(RunScript):
         self.append('roberta_rescore --detokenize < {} > {}'.format(source_yaml, target_yaml))
         for l in self.config['rescore']['lambda']:
             lmil = int(l * 1000)
-            target_text = 'bea19_valid_rescored.{}.txt'.format(lmil)
-            self.append('select_with_lambda -l {} < {} > {} &'.format(l, target_yaml, target_text))
+            rescored_text = 'bea19_valid_rescored.{}.txt'.format(lmil)
+            self.append('rescore_with_lambda -l {} < {} | select_best > {} &'.format(l, target_yaml, rescored_text))
         self.append('wait')
 
 class Bea19RescoreScoreRunScript(Bea19ScoreRunScript):
@@ -23,11 +23,11 @@ class Bea19RescoreScoreRunScript(Bea19ScoreRunScript):
 
     def output_path(self):
         lmil = int(self.l * 1000)
-        output = 'bea19_valid.{}.m2'.format(lmil)
-        result = 'bea19_valid.{}.res'.format(lmil)
-        result_cat1 = 'bea19_valid.{}.cat1'.format(lmil)
-        result_cat2 = 'bea19_valid.{}.cat2'.format(lmil)
-        result_cat3 = 'bea19_valid.{}.cat3'.format(lmil)
+        output = 'bea19_valid_rescored.{}.m2'.format(lmil)
+        result = 'bea19_valid_rescored.{}.res'.format(lmil)
+        result_cat1 = 'bea19_valid_rescored.{}.cat1'.format(lmil)
+        result_cat2 = 'bea19_valid_rescored.{}.cat2'.format(lmil)
+        result_cat3 = 'bea19_valid_rescored.{}.cat3'.format(lmil)
         return output, result, result_cat1, result_cat2, result_cat3
 
 class RescoreScoreSubScript(OutputSubScript):
