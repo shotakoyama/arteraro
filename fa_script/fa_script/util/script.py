@@ -1,23 +1,22 @@
 from pathlib import Path
+from fa_script.util.name import make_script_name
+from fa_script.util.load import load_config, load_sub_config
 
 class Script(list):
-    def __init__(self, config):
+    def __init__(self):
         super().__init__()
-        self.config = config
+        self.config = load_config()
         self.header()
         self.make()
-
-    def make(self):
-        raise NotImplementedError
 
     def __str__(self):
         return '\n'.join(self)
 
 class RunScript(Script):
-    def __init__(self, config, work_dir, use_localdir=False):
+    def __init__(self, work_dir, use_localdir=False):
         self.work_dir = work_dir
         self.use_localdir = use_localdir
-        super().__init__(config)
+        super().__init__()
 
     def header_workdir(self):
         self.append('cd {}'.format(self.work_dir))
@@ -53,9 +52,9 @@ class RunScript(Script):
             self.append('')
 
 class SubScript(Script):
-    def __init__(self, config, sub_config):
-        self.sub_config = sub_config
-        super().__init__(config)
+    def __init__(self):
+        self.sub_config = load_sub_config()
+        super().__init__()
 
     def header(self):
         self.append('set -ex')

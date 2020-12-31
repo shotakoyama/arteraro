@@ -1,19 +1,31 @@
 from pathlib import Path
 from fa_script.util.qsub import qsub_command
 from fa_script.util.script import SubScript
-from fa_script.util.generate import make_prod, make_prod_without_index_and_epoch, make_base_dir, make_ensemble_base_dir
+from fa_script.util.name import make_script_name
+from fa_script.util.prod import make_epoch_list, make_prod
+from fa_script.util.base import make_base_dir, make_ensemble_base_dir
+from fa_script.util.load import load_eval_config, load_config_and_eval_config
 
 class OutputSubScript(SubScript):
-    def __init__(self, dataset, config, sub_config, eval_config):
+    def __init__(self, phase, dataset, default_node, default_num_node):
+        self.phase = phase
         self.dataset = dataset
-        self.eval_config = eval_config
-        super().__init__(config, sub_config)
+        self.default_node = default_node
+        self.default_num_node = default_num_node
+        self.eval_config = load_eval_config()
+        super().__init__()
+
+    def get_run_script_name(self):
+        return '{}.sh'.format(self.phase)
+
+    def get_h_rt(self):
+        return self.sub_config[self.phase]['h_rt']
 
     def append_command(self, base_dir, code_path = None):
         if code_path is None:
-            code_path = base_dir / '{}_{}.sh'.format(self.phase_abbrev, self.dataset)
+            code_path = base_dir / self.get_run_script_name()
         group = self.sub_config['group']
-        h_rt = self.sub_config[self.phase]['h_rt']
+        h_rt = self.get_h_rt()
         node = self.sub_config[self.phase].get('node', self.default_node)
         num_node = self.sub_config[self.phase].get('num_node', self.default_num_node)
         p = self.sub_config[self.phase].get('p', None)
@@ -21,54 +33,38 @@ class OutputSubScript(SubScript):
         command = qsub_command(code_path, group, h_rt, node, num_node, p=p, var_dict=var_dict)
         self.append(command)
 
+class SingleOutputSubScript(OutputSubScript):
+    def __init__(self, phase, dataset, stage, default_node, default_num_node):
+        self.stage = stage
+        super().__init__(phase, dataset, default_node, default_num_node)
 
-class SingleOutputSubScript:
-    def make(self):
-        prod = make_prod(self.config)
-        for index, epoch, beam, lenpen in prod:
-            base_dir = make_base_dir(index, self.dataset, epoch, beam, lenpen)
-            self.append_command(base_dir)
+    def get_sub_script_name(self):
+        return '{}_{}_{}.sh'.format(self.phase, self.dataset, self.stage)
 
-class EnsembleOutputSubScript:
-    def make(self):
-        prod = make_prod_without_index_and_epoch(self.config)
-        for beam, lenpen in prod:
-            base_dir = make_ensemble_base_dir(self.dataset, beam, lenpen)
-            self.append_command(base_dir)
+class EnsembleOutputSubScript(SingleOutputSubScript):
+    def get_sub_script_name(self):
+        return '{}_{}_{}_ensemble.sh'.format(self.phase, self.dataset, self.stage)
 
-class GenerateSubScript(OutputSubScript):
-    def __init__(self, dataset, config, sub_config, eval_config):
-        self.phase = 'generate'
-        self.phase_abbrev = 'gen'
-        self.default_node = 'rt_G.small'
-        self.default_num_node = 1
-        super().__init__(dataset, config, sub_config, eval_config)
+class EnsembleValidTestOutputSubScript(OutputSubScript):
+    def get_sub_script_name(self):
+        return '{}_{}_ensemble.sh'.format(self.phase, self.dataset)
 
-class ScoreSubScript(OutputSubScript):
-    def __init__(self, dataset, config, sub_config, eval_config):
-        self.phase = 'score'
-        self.phase_abbrev = 'score'
-        self.default_node = 'rt_C.small'
-        self.default_num_node = 1
-        super().__init__(dataset, config, sub_config, eval_config)
+class OutputSubScriptGenerator:
+    def __init__(self, script_class):
+        self.script_class = script_class
 
-class RescoreSubScript(EnsembleOutputSubScript, OutputSubScript):
-    def __init__(self, dataset, config, sub_config, eval_config):
-        self.phase = 'rescore'
-        self.phase_abbrev = 'rescore'
-        self.default_node = 'rt_G.small'
-        self.default_num_node = 1
-        super().__init__(dataset, config, sub_config, eval_config)
+    def __call__(self):
+        sub_script = self.script_class()
+        with open(sub_script.get_sub_script_name(), 'w') as f:
+            f.write(str(sub_script))
 
-class SingleGenerateSubScript(SingleOutputSubScript, GenerateSubScript):
-    pass
+class OutputRunScriptGenerator:
+    def __init__(self, dataset, script_class):
+        self.dataset = dataset
+        self.script_class = script_class
+        self.config, self.eval_config = load_config_and_eval_config()
 
-class SingleScoreSubScript(SingleOutputSubScript, ScoreSubScript):
-    pass
-
-class EnsembleGenerateSubScript(EnsembleOutputSubScript, GenerateSubScript):
-    pass
-
-class EnsembleScoreSubScript(EnsembleOutputSubScript, ScoreSubScript):
-    pass
+    def write_script(self, base_dir, script):
+        with open(base_dir / script.get_script_name(), 'w') as f:
+            f.write(str(script))
 

@@ -1,91 +1,40 @@
-from pathlib import Path
-from fa_script.util.util import check_sub_config, load_config_and_eval_config, load_config_and_sub_config_and_eval_config
-from fa_script.util.script import RunScript
-from fa_script.util.generate import make_prod_without_index_and_epoch, make_ensemble_base_dir
-from fa_script.util.output import RescoreSubScript, OutputSubScript
-from fa_script.score.bea19 import Bea19ScoreRunScript
+from fa_script.rescore.errant import ErrantRescoreRunScript
+from fa_script.rescore.generator import RescoreRegenerateRunScriptGenerator, RescoreScoreRunScriptGenerator
+from fa_script.rescore.run import RescoreRegenerateRunScript
+from fa_script.rescore.sub import RescoreRegenerateSubScript, RescoreScoreSubScript
+from fa_script.util.output import OutputSubScriptGenerator
+from fa_script.util.generator import ScriptGenerator
 
-class Bea19RescoreRunScript(RunScript):
-    def make(self):
-        source_yaml = 'bea19_valid.yaml'
-        target_yaml = 'bea19_valid_rescored.yaml'
-        self.append('roberta_rescore --detokenize < {} > {}'.format(source_yaml, target_yaml))
-        for l in self.config['rescore']['lambda']:
-            lmil = int(l * 1000)
-            rescored_text = 'bea19_valid_rescored.{}.txt'.format(lmil)
-            self.append('rescore_with_lambda -l {} < {} | select_best > {} &'.format(l, target_yaml, rescored_text))
-        self.append('wait')
+class Bea19RescoreRegenerateRunScriptGenerator(RescoreRegenerateRunScriptGenerator):
+    def __init__(self):
+        super().__init__('bea19', RescoreRegenerateRunScript)
 
-class Bea19RescoreScoreRunScript(Bea19ScoreRunScript):
-    def __init__(self, config, eval_config, base_dir, l, corrected):
-        self.l = l
-        super().__init__(config, eval_config, base_dir, corrected)
+class Bea19RescoreRegenerateSubScript(RescoreRegenerateSubScript):
+    def __init__(self):
+        super().__init__('bea19')
 
-    def output_path(self):
+regenerate_run = Bea19RescoreRegenerateRunScriptGenerator()
+regenerate_sub = OutputSubScriptGenerator(Bea19RescoreRegenerateSubScript)
+
+class Bea19ValidRescoreScoreRunScript(ErrantRescoreRunScript):
+    def input_path(self):
+        original = self.eval_config['bea19']['valid_orig']
+        reference = self.eval_config['bea19']['valid_m2']
         lmil = int(self.l * 1000)
-        output = 'bea19_valid_rescored.{}.m2'.format(lmil)
-        result = 'bea19_valid_rescored.{}.res'.format(lmil)
-        result_cat1 = 'bea19_valid_rescored.{}.cat1'.format(lmil)
-        result_cat2 = 'bea19_valid_rescored.{}.cat2'.format(lmil)
-        result_cat3 = 'bea19_valid_rescored.{}.cat3'.format(lmil)
-        return output, result, result_cat1, result_cat2, result_cat3
+        corrected = 'best.{}.txt'.format(lmil)
+        return original, reference, corrected
 
-class RescoreScoreSubScript(OutputSubScript):
-    def __init__(self, config, sub_config, eval_config):
-        self.phase = 'rescore_score'
-        self.phase_abbrev = 'rescore_score'
-        self.default_node = 'rt_C.small'
-        self.default_num_node = 1
-        super().__init__('bea19', config, sub_config, eval_config)
+class Bea19ValidRescoreScoreRunScriptGenerator(RescoreScoreRunScriptGenerator):
+    def __init__(self):
+        super().__init__('bea19', 'valid', Bea19ValidRescoreScoreRunScript)
 
-    def make(self):
-        prod = make_prod_without_index_and_epoch(self.config)
-        for beam, lenpen in prod:
-            for l in self.config['rescore']['lambda']:
-                base_dir = make_ensemble_base_dir(self.dataset, beam, lenpen)
-                lmil = int(l * 1000)
-                code_path = base_dir / 'rescore_score_bea19.{}.sh'.format(lmil)
-                self.append_command(base_dir, code_path = code_path)
+class Bea19ValidRescoreScoreSubScript(RescoreScoreSubScript):
+    def __init__(self):
+        super().__init__('bea19', 'valid')
 
-def run_rescore():
-    config, eval_config = load_config_and_eval_config()
-    prod = make_prod_without_index_and_epoch(config)
-    for beam, lenpen in prod:
-        base_dir = make_ensemble_base_dir('bea19', beam, lenpen)
-        script = Bea19RescoreRunScript(config, base_dir)
-        script_path = base_dir / 'rescore_bea19.sh'
-        with open(script_path, 'w') as f:
-            f.write(str(script))
+valid_score_run = Bea19ValidRescoreScoreRunScriptGenerator()
+valid_score_sub = OutputSubScriptGenerator(Bea19ValidRescoreScoreSubScript)
 
-def run_rescore_score():
-    config, eval_config = load_config_and_eval_config()
-    prod = make_prod_without_index_and_epoch(config)
-    for beam, lenpen in prod:
-        for l in config['rescore']['lambda']:
-            base_dir = make_ensemble_base_dir('bea19', beam, lenpen)
-            lmil = int(l * 1000)
-            corrected = 'bea19_valid_rescored.{}.txt'.format(lmil)
-            script = Bea19RescoreScoreRunScript(config, eval_config, base_dir, l, corrected)
-            script_path = base_dir / 'rescore_score_bea19.{}.sh'.format(lmil)
-            with open(script_path, 'w') as f:
-                f.write(str(script))
-
-def sub_rescore():
-    config, sub_config, eval_config = load_config_and_sub_config_and_eval_config()
-    sub_script = RescoreSubScript('bea19', config, sub_config, eval_config)
-    with open('rescore_bea19.sh', 'w') as f:
-        print(sub_script, file=f)
-
-def sub_rescore_score():
-    config, sub_config, eval_config = load_config_and_sub_config_and_eval_config()
-    sub_script = RescoreScoreSubScript(config, sub_config, eval_config)
-    with open('rescore_score_bea19.sh', 'w') as f:
-        print(sub_script, file=f)
-
-def main():
-    run_rescore()
-    run_rescore_score()
-    if check_sub_config():
-        sub_rescore()
-        sub_rescore_score()
+bea19_rescore_regenerate = ScriptGenerator(regenerate_run, regenerate_sub)
+bea19_rescore_valid_score = ScriptGenerator(valid_score_run, valid_score_sub)
 
