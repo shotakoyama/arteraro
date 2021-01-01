@@ -7,7 +7,7 @@ from fa_script.generate.sub import (
         ValidSingleGenerateSubScript,
         TestSingleGenerateSubScript,
         EnsembleGenerateSubScript)
-from fa_script.result.errant import M2ResultTable
+from fa_script.result.errant import ErrantResultTable
 from fa_script.util.output import OutputSubScriptGenerator
 from fa_script.util.generator import ScriptGenerator
 
@@ -24,7 +24,7 @@ class Bea19TestSingleGenerateRunScriptGenerator(TestSingleGenerateRunScriptGener
         self.source = self.eval_config['bea19']['test_src']
 
     def make_result_table(self):
-        return M2ResultTable(self.config, self.dataset, 'valid')
+        return ErrantResultTable(self.dataset, 'valid')
 
 class Bea19EnsembleGenerateRunScriptGenerator(EnsembleGenerateRunScriptGenerator):
     def __init__(self):
@@ -35,7 +35,7 @@ class Bea19EnsembleGenerateRunScriptGenerator(EnsembleGenerateRunScriptGenerator
         self.test_source = self.eval_config['bea19']['test_src']
 
     def make_result_table(self):
-        return M2ResultTable(self.config, self.dataset, 'valid')
+        return ErrantResultTable(self.dataset, 'valid')
 
 valid_single_run = Bea19ValidSingleGenerateRunScriptGenerator()
 test_single_run = Bea19TestSingleGenerateRunScriptGenerator()
@@ -50,20 +50,20 @@ class Bea19TestSingleGenerateSubScript(TestSingleGenerateSubScript):
         super().__init__('bea19')
 
     def make_result_table(self):
-        return M2ResultTable(self.config, self.dataset, 'valid')
+        return ErrantResultTable(self.dataset, 'valid')
 
 class Bea19EnsembleGenerateSubScript(EnsembleGenerateSubScript):
     def __init__(self):
         super().__init__('bea19')
 
     def make_result_table(self):
-        return M2ResultTable(self.config, self.dataset, 'valid')
+        return ErrantResultTable(self.dataset, 'valid')
 
 valid_single_sub = OutputSubScriptGenerator(Bea19ValidSingleGenerateSubScript)
 test_single_sub = OutputSubScriptGenerator(Bea19TestSingleGenerateSubScript)
 ensemble_sub = OutputSubScriptGenerator(Bea19EnsembleGenerateSubScript)
 
-bea19_valid_single = ScriptGenerator(valid_single_run, valid_single_sub)
-bea19_test_single = ScriptGenerator(test_single_run, test_single_sub)
-bea19_ensemble = ScriptGenerator(ensemble_run, ensemble_sub)
+generate_bea19_valid_single = ScriptGenerator(valid_single_run, valid_single_sub)
+generate_bea19_test_single = ScriptGenerator(test_single_run, test_single_sub)
+generate_bea19_ensemble = ScriptGenerator(ensemble_run, ensemble_sub)
 

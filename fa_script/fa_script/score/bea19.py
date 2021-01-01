@@ -33,6 +33,6 @@ class Bea19ValidEnsembleScoreSubScript(ValidEnsembleScoreSubScript):
 valid_single_sub = OutputSubScriptGenerator(Bea19ValidSingleScoreSubScript)
 valid_ensemble_sub = OutputSubScriptGenerator(Bea19ValidEnsembleScoreSubScript)
 
-bea19_valid_single = ScriptGenerator(valid_single_run, valid_single_sub)
-bea19_valid_ensemble = ScriptGenerator(valid_ensemble_run, valid_ensemble_sub)
+score_bea19_valid_single = ScriptGenerator(valid_single_run, valid_single_sub)
+score_bea19_valid_ensemble = ScriptGenerator(valid_ensemble_run, valid_ensemble_sub)
 
