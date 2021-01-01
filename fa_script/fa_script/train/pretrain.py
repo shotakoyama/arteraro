@@ -1,20 +1,18 @@
 from pathlib import Path
-from fa_script.util.util import load_config, check_sub_config, load_config_and_sub_config
+from fa_script.util.load import load_config, check_sub_config
+from fa_script.util.prod import make_index_list
 from fa_script.util.train import TrainRunScript, TrainSubScript
 
 def run():
-    config = load_config()
-    seed_list = config['seed_list']
-    for n in range(len(seed_list)):
+    for n in make_index_list(load_config()):
         base_dir = Path(str(n)).resolve()
         base_dir.mkdir(exist_ok=True)
-        script = TrainRunScript(config, n, base_dir)
+        script = TrainRunScript(n, base_dir)
         with open(base_dir / 'pretrain.sh', 'w') as f:
             f.write(str(script))
 
 def sub():
-    config, sub_config = load_config_and_sub_config()
-    sub_script = TrainSubScript(config, sub_config, 'pretrain')
+    sub_script = TrainSubScript('pretrain')
     with open('pretrain.sh', 'w') as f:
         f.write(str(sub_script))
 

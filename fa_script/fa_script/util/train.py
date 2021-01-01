@@ -4,9 +4,9 @@ from fa_script.util.script import RunScript, SubScript
 from fa_script.util.fairseq import FairseqTrainCommand
 
 class TrainRunScript(RunScript):
-    def __init__(self, config, expt_id, work_dir):
+    def __init__(self, expt_id, work_dir):
         self.expt_id = expt_id
-        super().__init__(config, work_dir, use_localdir = True)
+        super().__init__(work_dir, use_localdir = True)
 
     def make_indices(self):
         indices = self.config['data_indices'][self.expt_id]
@@ -45,12 +45,12 @@ class TrainRunScript(RunScript):
                 activation_dropout = self.config['train'].get('activation_dropout', 0.2),
                 activation_fn = self.config['train'].get('activation_fn', 'gelu'))
         command.adam(*self.config['train'].get('adam_betas', [0.9, 0.999]))
-        command.inverse_sqrt(self.config['train']['lr'], self.config['train']['warmup_updates'], self.config['train']['warmup_init_lr'])
+        command.inverse_sqrt(self.config['train']['lr'], self.config['train']['warmup_updates'], self.config['train'].get('warmup_init_lr', 1.0e-07))
         if 'clip_norm' in self.config:
-            command.clip_norm(self.config['train']['clip_norm'])
+            command.clip_norm(self.config['train'].get('clip_norm', 1.0))
         if 'weight_decay' in self.config:
-            command.weight_decay(self.config['train']['weight_decay'])
-        command.label_smoothed_cross_entropy(self.config['train']['label_smoothing'])
+            command.weight_decay(self.config['train'].get('weight_decay', 1.0e-03))
+        command.label_smoothed_cross_entropy(self.config['train'].get('label_smoothing', 0.1))
         self.append(str(command))
 
     def make(self):
@@ -60,9 +60,9 @@ class TrainRunScript(RunScript):
         self.make_train_command(indices)
 
 class TrainSubScript(SubScript):
-    def __init__(self, config, sub_config, mode):
+    def __init__(self, mode):
         self.mode = mode
-        super().__init__(config, sub_config)
+        super().__init__()
 
     def make(self):
         for n in range(len(self.config['seed_list'])):
