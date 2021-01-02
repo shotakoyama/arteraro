@@ -33,10 +33,13 @@ def show_test_single_results(dataset, valid_result_table_class, test_result_clas
         base_dir = make_base_dir(valid_result.index, dataset, 'test', valid_result.epoch)
         result_path = base_dir / 'result.res'
         if result_path.exists():
-            test_result = test_result_class(valid_result.index, valid_result.epoch, result_path)
-            test_result_list.append(test_result)
-            print('index {}: {} ({}, {}, {})'.format(test_result.index,
-                test_result.f, test_result.p, test_result.r, test_result.epoch))
+            try:
+                test_result = test_result_class(valid_result.index, valid_result.epoch, result_path)
+                test_result_list.append(test_result)
+                print('index {}: {} ({}, {}, {})'.format(test_result.index,
+                    test_result.f, test_result.p, test_result.r, test_result.epoch))
+            except IndexError:
+                pass
     if len(test_result_list) > 0:
         ave_p, ave_r, ave_f = list_average_score(test_result_list)
         print('average: {} ({}, {})'.format(ave_f, ave_p, ave_r))
