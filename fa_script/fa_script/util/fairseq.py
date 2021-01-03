@@ -115,6 +115,13 @@ class FairseqTrainCommand(list):
     def reset_lr_scheduler(self):
         self.append('--reset-lr-scheduler')
 
+    def distributed(self, num_nodes, gpus_per_node=4, port=54849):
+        self += [
+            '--distributed-world-size {}'.format(num_nodes * gpus_per_node),
+            '--distributed-rank $(expr {} \* $OMPI_COMM_WORLD_RANK)'.format(gpus_per_node),
+            '--distributed-init-method "tcp://${{1}}:{}"'.format(port),
+            '--distributed-port {}'.format(port)]
+
     def __str__(self):
         if self.log_file is None:
             lst = self

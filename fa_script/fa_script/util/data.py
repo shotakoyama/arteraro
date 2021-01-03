@@ -3,9 +3,9 @@ from fa_script.util.script import SubScript
 from fa_script.util.qsub import qsub_command
 
 class DataSubScript(SubScript):
-    def __init__(self, config, sub_config, indices):
+    def __init__(self, indices):
         self.indices = indices
-        super().__init__(config, sub_config)
+        super().__init__()
 
     def make(self):
         for n in self.indices:

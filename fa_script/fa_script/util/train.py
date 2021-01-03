@@ -46,18 +46,16 @@ class TrainRunScript(RunScript):
                 activation_fn = self.config['train'].get('activation_fn', 'gelu'))
         command.adam(*self.config['train'].get('adam_betas', [0.9, 0.999]))
         command.inverse_sqrt(self.config['train']['lr'], self.config['train']['warmup_updates'], self.config['train'].get('warmup_init_lr', 1.0e-07))
-        if 'clip_norm' in self.config:
-            command.clip_norm(self.config['train'].get('clip_norm', 1.0))
-        if 'weight_decay' in self.config:
-            command.weight_decay(self.config['train'].get('weight_decay', 1.0e-03))
+        command.clip_norm(self.config['train'].get('clip_norm', 1.0))
+        command.weight_decay(self.config['train'].get('weight_decay', 1.0e-03))
         command.label_smoothed_cross_entropy(self.config['train'].get('label_smoothing', 0.1))
-        self.append(str(command))
+        return command
 
     def make(self):
         indices = self.make_indices()
         self.make_copy(indices)
         self.append('')
-        self.make_train_command(indices)
+        self.append(str(self.make_train_command(indices)))
 
 class TrainSubScript(SubScript):
     def __init__(self, mode):

@@ -1,5 +1,5 @@
 from pathlib import Path
-from fa_script.util.util import load_config, check_sub_config, load_config_and_sub_config
+from fa_script.util.load import load_config, check_sub_config, load_config_and_sub_config
 from fa_script.util.spm import spm_command
 from fa_script.util.qsub import qsub_command
 from fa_script.util.script import RunScript
@@ -35,10 +35,10 @@ def command_list(mode, corpora, sample, spm_model, src_dropout, trg_dropout, src
     return command_list
 
 class FinetuneDataRunScript(RunScript):
-    def __init__(self, config, work_dir, n, first_index):
+    def __init__(self, work_dir, n, first_index):
         self.n = n
         self.first_index = first_index
-        super().__init__(config, work_dir, use_localdir = True)
+        super().__init__(work_dir, use_localdir = True)
 
     def make_prepare(self, src, trg):
         self += [
@@ -83,7 +83,7 @@ def run():
     for n in range(config['trial']):
         base_dir = Path(str(n)).resolve()
         base_dir.mkdir(exist_ok = True)
-        script = FinetuneDataRunScript(config, base_dir, n, first_trial)
+        script = FinetuneDataRunScript(base_dir, n, first_trial)
         with open(base_dir / 'data.sh', 'w') as f:
             f.write(str(script))
     return first_trial
@@ -93,10 +93,10 @@ def sub(first_trial):
     indices = [n for n in range(config['trial'])]
     if first_trial is not None:
         indices = [n for n in indices if n != first_trial]
-        sub_script = DataSubScript(config, sub_config, [first_trial])
+        sub_script = DataSubScript([first_trial])
         with open('first_sub.sh', 'w') as f:
             f.write(str(sub_script))
-    sub_script = DataSubScript(config, sub_config, indices)
+    sub_script = DataSubScript(indices)
     with open('sub.sh', 'w') as f:
         f.write(str(sub_script))
 

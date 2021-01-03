@@ -1,5 +1,5 @@
 from pathlib import Path
-from fa_script.util.util import load_config, load_config_and_sub_config, check_sub_config
+from fa_script.util.load import load_config, load_config_and_sub_config, check_sub_config
 from fa_script.util.spm import spm_command
 from fa_script.util.qsub import qsub_command
 from fa_script.util.script import RunScript
@@ -7,10 +7,10 @@ from fa_script.util.data import DataSubScript
 from fa_script.util.fairseq import fairseq_preprocess_command
 
 class PretrainDataRunScript(RunScript):
-    def __init__(self, config, work_dir, n, first_index):
+    def __init__(self, work_dir, n, first_index):
         self.n = n
         self.first_index = first_index
-        super().__init__(config, work_dir, use_localdir = True)
+        super().__init__(work_dir, use_localdir = True)
 
     def make_src_dict_path(self):
         if (self.first_index is not None) and (self.n != self.first_index):
@@ -39,20 +39,20 @@ def run():
     for n in range(config['pretrain']['trials']):
         base_dir = Path(str(n)).resolve()
         base_dir.mkdir(exist_ok = True)
-        script = PretrainDataRunScript(config, base_dir, n, first_trial)
+        script = PretrainDataRunScript(base_dir, n, first_trial)
         with open(base_dir / 'data.sh', 'w') as f:
             f.write(str(script))
     return first_trial
 
 def sub(first_trial):
-    config, sub_config = load_config_and_sub_config()
+    config = load_config()
     indices = [n for n in range(config['pretrain']['trials'])]
     if first_trial is not None:
         indices = [n for n in indices if n != first_trial]
-        sub_script = DataSubScript(config, sub_config, [first_trial])
+        sub_script = DataSubScript([first_trial])
         with open('first_sub.sh', 'w') as f:
             f.write(str(sub_script))
-    sub_script = DataSubScript(config, sub_config, indices)
+    sub_script = DataSubScript(indices)
     with open('sub.sh', 'w') as f:
         f.write(str(sub_script))
 

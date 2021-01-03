@@ -53,7 +53,7 @@ def show_valid_rescore_result(dataset, result_list_fn):
     result_list = result_list_fn(dataset, 'valid')
     if len(result_list) > 0:
         maximum = max(result_list)
-        print('rescore (l={}): {} ({}, {})'.format(maximum.l, maximum.f, maximum.p, maximum.r))
+        print('rescore({}) (l={}): {} ({}, {})'.format(len(result_list), maximum.l, maximum.f, maximum.p, maximum.r))
 
 def show_test_rescore_result(dataset, valid_result_list_fn, test_result_class):
     valid_result_list = valid_result_list_fn(dataset, 'valid')
@@ -63,6 +63,8 @@ def show_test_rescore_result(dataset, valid_result_list_fn, test_result_class):
         best_lmil = int(best_l * 1000)
         result_path = make_ensemble_base_dir(dataset, 'test') / 'result.{}.res'.format(best_lmil)
         test_result = test_result_class(None, None, result_path, l = best_l)
-        print('rescore (l={}): {} ({}, {})'.format(test_result.l,
+        print('rescore({}) (l={}): {} ({}, {})'.format(
+            len(valid_result_list),
+            test_result.l,
             test_result.f, test_result.p, test_result.r))
 
