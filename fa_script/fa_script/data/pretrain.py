@@ -22,7 +22,10 @@ class PretrainDataRunScript(RunScript):
         return src_dict_path
 
     def make(self):
-        train_gzip = Path(self.config['pretrain']['base_dir']).resolve() / str(self.n) / 'train.gz'
+        if 'base_dir' in self.config['pretrain']:
+            train_gzip = Path(self.config['pretrain']['base_dir']).resolve() / str(self.n) / 'train.gz'
+        else:
+            train_gzip = ' '.join([str(Path(x).resolve() / str(self.n) / 'train.gz') for x in self.config['pretrain']['base_list']])
         self.append('zcat {} | cut -f 1 > ${{SGE_LOCALDIR}}/train.src &'.format(train_gzip))
         self.append('zcat {} | cut -f 2 > ${{SGE_LOCALDIR}}/train.trg &'.format(train_gzip))
         self.append('wait')

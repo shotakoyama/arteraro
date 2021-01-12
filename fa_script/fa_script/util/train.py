@@ -71,6 +71,6 @@ class TrainSubScript(SubScript):
             num_node = self.sub_config['train'].get('num_node', 1)
             p = self.sub_config['train'].get('p', None)
             var_dict = {'SGE_QSUB': 'yes'}
-            command = qsub_command(code_path, group, h_rt, node, num_node, var_dict=var_dict)
+            command = qsub_command(code_path, group, h_rt, node, num_node, p = p, var_dict=var_dict)
             self.append(command)
 
