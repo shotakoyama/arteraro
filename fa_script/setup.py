@@ -21,4 +21,5 @@ setuptools.setup(
                 'fa_result_conll = fa_script.result.conll:main',
                 'fa_result_fce = fa_script.result.fce:main',
                 'fa_result_jfleg = fa_script.result.jfleg:main',
+                'fa_errant_cat2 = fa_script.errant.cat2:main',
             ]},)
