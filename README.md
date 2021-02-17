@@ -1,1 +1,47 @@
 # arteraro
+
+# Installation
+
+## 1. environment
+
+### requirements
+- Python version >= 3.8
+- PyTorch version >= 1.7.0
+
+### recommended
+- CUDA version: 10.2
+- cudnn version: 8.0.2
+- nccl version: 2.7.8-1
+- gdrcopy version: 2.0
+- openmpi version: 4.0.3
+- fairseq version: v0.10.1
+
+## 2. install packages using `pip install requirements.txt`
+
+You must use SpaCy 2.3. Do not use SpaCy v1 or Spacy v3.
+
+## 3. install `fairseq`
+
+If you want to reproduce our experiments in the same environment that we used, you must use `fairseq==0.10.1`.
+However, `fairseq==0.10.1` has a bug of using multiple nodes, and you must rewrite one line to run experiments using multiple nodes.
+This bug seems to be corrected in the latest commit. You can also use the latest fairseq.
+
+To install `fairseq==0.10.1`, you have to run `git clone https://github.com/pytorch/fairseq.git -b v0.10.1`, and install by `pip install -e .`.
+
+Then, you have to rewrite a line in `fairseq/distributed_utils.py` to run fairseq using multiple nodes.
+
+```
+  283:             torch.multiprocessing.spawn(
+  284:                 fn=distributed_main,
+  285:                 args=(main, args, kwargs),
+- 286:                 nprocs=args.distributed_num_procs,
++ 286:                 nprocs = min(
++ 287:                 torch.cuda.device_count(),
++ 288:                 args.distributed_world_size),
+  287:             )
+  288:         else:
+  289:             distributed_main(args.device_id, main, args, kwargs)
+```
+
+I recommend you to install `apex` following https://github.com/pytorch/fairseq#requirements-and-installation
+

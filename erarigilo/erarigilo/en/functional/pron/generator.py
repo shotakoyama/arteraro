@@ -1,5 +1,0 @@
-from erarigilo.util import *
-from .mistaker import *
-
-generate_sampling_pron_generator = ChoiceSamplingTokenWiseGenerator(PronChoiceSamplingCaseFittingTokenWiseMistaker)
-generate_sampling_first_singular_pron_generator = ChoiceSamplingTokenWiseGenerator(FirstSingularPronChoiceSamplingCaseFittingTokenWiseMistaker)

@@ -1,0 +1,14 @@
+lemminflect==0.2.1
+more-itertools==8.6.0
+nltk==3.5
+numpy==1.19.4
+PyYAML==5.3.1
+sacremoses==0.0.43
+sentencepiece==0.1.94
+spacy==2.3.2
+spacy-langdetect==0.1.2
+tabulate==0.8.7
+tokenizers==0.9.4
+torch==1.7.0
+tqdm==4.51.0
+transformers==4.1.1
