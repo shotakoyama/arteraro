@@ -1,14 +1,20 @@
 # arteraro
 
-# Installation
+- ニューラル文法誤り訂正のための多様な規則を用いる人工誤り生成 (言語処理学会第27回年次大会)
+	- paper, outputs and analyses
+		- TBA
+	- How to reproduce?
+		- Please see [nymwa/arterarejo](https://github.com/nymwa/arterarejo)
 
-## 1. environment
+## Installation
 
-### requirements
+### 1. environment
+
+#### requirements
 - Python version >= 3.8
 - PyTorch version >= 1.7.0
 
-### recommended
+#### recommended
 - CUDA version: 10.2
 - cudnn version: 8.0.2
 - nccl version: 2.7.8-1
@@ -16,11 +22,11 @@
 - openmpi version: 4.0.3
 - fairseq version: v0.10.1
 
-## 2. install packages using `pip install requirements.txt`
+### 2. install packages using `pip install requirements.txt`
 
 You must use SpaCy 2.3. Do not use SpaCy v1 or Spacy v3.
 
-## 3. install `fairseq`
+### 3. install `fairseq`
 
 If you want to reproduce our experiments in the same environment that we used, you must use `fairseq==0.10.1`.
 However, `fairseq==0.10.1` has a bug of using multiple nodes, and you must rewrite one line to run experiments using multiple nodes.
