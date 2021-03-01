@@ -2,9 +2,13 @@
 
 - ニューラル文法誤り訂正のための多様な規則を用いる人工誤り生成 (言語処理学会第27回年次大会)
 	- paper, outputs and analyses
-		- TBA
+		- Please see [nymwa/anlp_nlp2021_aeg](https://github.com/nymwa/anlp_nlp2021_aeg)
 	- How to reproduce?
 		- Please see [nymwa/arterarejo](https://github.com/nymwa/arterarejo)
+
+## Where is documents of error generating rules for artificial error generation?
+
+You can see at [arteraro/erarigilo/README.md](https://github.com/nymwa/arteraro/tree/main/arteraro/erarigilo).
 
 ## Installation
 
@@ -20,11 +24,11 @@
 - nccl version: 2.7.8-1
 - gdrcopy version: 2.0
 - openmpi version: 4.0.3
-- fairseq version: v0.10.1
+- fairseq version: 0.10.1
 
 ### 2. install packages using `pip install requirements.txt`
 
-You must use SpaCy 2.3. Do not use SpaCy v1 or Spacy v3.
+You must use SpaCy 2.3. Do not use SpaCy v1 or SpaCy v3.
 
 ### 3. install `fairseq`
 
@@ -34,7 +38,7 @@ This bug seems to be corrected in the latest commit. You can also use the latest
 
 To install `fairseq==0.10.1`, you have to run `git clone https://github.com/pytorch/fairseq.git -b v0.10.1`, and install by `pip install -e .`.
 
-Then, you have to rewrite a line in `fairseq/distributed_utils.py` to run fairseq using multiple nodes.
+Then, you have to rewrite a line in `fairseq/distributed_utils.py` like below, to run fairseq using multiple nodes.
 
 ```
   283:             torch.multiprocessing.spawn(
@@ -50,4 +54,10 @@ Then, you have to rewrite a line in `fairseq/distributed_utils.py` to run fairse
 ```
 
 I recommend you to install `apex` following https://github.com/pytorch/fairseq#requirements-and-installation
+
+### 4. install `arterarejo`
+
+You run `pip install -e .` under `/path/to/arteraro`. Then now you can use arteraro in your environment.
+
+Let's generate artificial errors for better grammatical error correction!
 
