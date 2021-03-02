@@ -33,4 +33,19 @@ This rule generates error for conjunction *but*.
 
 This rule generates errors for contraction.
 
+This rule applies to word which is not punctuation and has `'` in itself.
+
+This rule removes the whole word or removes `'` in word.
+
+## part
+
+This rule generates errors for particle.
+
+word whose dependency tag is `prt` and POS tag is `RP` → ε (0.65), out (0.05), up (0.05), down (0.05), about (0.05), on (0.05), in (0.05), off (0.05)
+
+## to
+
+This rule generates error for `to` infinitive.
+
+*to* (whose tag is `TO`) → ε (0.6), *by* (0.2), *for* (0.2)
 
