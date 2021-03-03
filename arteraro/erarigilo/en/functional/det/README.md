@@ -19,13 +19,13 @@ cond 3: The right word has POS tag `NN`, `NNS`, `JJ`, `JJN`, `JJS`.
 If (cond1 or cond2) and cond3, this rule applies, and insert
 a (0.3), an (0.3), the (0.3), this (0.025), that (0.025), these (0.025), those (0.025).
 
-# demonstrative
+## demonstrative
 
 This rule  generates error for demonstrative.
 
 *this*, *that*, *these*, *those* (whose dependency tag is `det`) → ε, *this*, *that*, *these*, *those*, *a*, *an*, *the*
 
-# demonstrative_extra
+## demonstrative_extra
 
 This rule generates error for demonstrative.
 
