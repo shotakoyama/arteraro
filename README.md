@@ -6,7 +6,7 @@
 	- How to reproduce?
 		- Please see [nymwa/arterarejo](https://github.com/nymwa/arterarejo)
 
-## Where is documents of error generating rules for artificial error generation?
+## Where are documents of error generating rules for artificial error generation?
 
 You can see at [arteraro/erarigilo/README.md](https://github.com/nymwa/arteraro/tree/main/arteraro/erarigilo).
 
