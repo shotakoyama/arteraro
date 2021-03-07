@@ -33,20 +33,20 @@ class Script(list):
 
 class RunScript(Script):
     def header_workdir(self):
-        self.append('if [ -z $WORKDIR ] ; then')
+        self.append('if [[ -z $WORKDIR ]] ; then')
         self.append('   WORKDIR=`dirname $0`')
         self.append('fi')
         self.append('cd $WORKDIR')
 
     def header_environment(self):
-        self.append('if [ -n $SGE_QSUB ] ; then')
+        self.append('if [[ -n $IS_SGE ]] ; then')
         self.append('   . /etc/profile.d/modules.sh')
         if 'source_path' in self.config:
             self.append('   . {}'.format(Path(self.config['source_path']).resolve()))
         self.append('fi')
 
     def header_localdir(self):
-        self.append('if [ -z $SGE_LOCALDIR ] ; then')
+        self.append('if [[ -z $SGE_LOCALDIR ]] ; then')
         self.append('   mkdir tmp')
         self.append('   SGE_LOCALDIR=tmp')
         self.append('fi')

@@ -28,14 +28,14 @@ class RunScript(Script):
 
     def header_environment(self):
         self += [
-            'if [ -n $SGE_QSUB ] ; then',
+            'if [[ -n $IS_SGE ]] ; then',
             '   . /etc/profile.d/modules.sh']
         self.append_source_path()
         self.append('fi')
 
     def header_localdir(self):
         self += [
-            'if [ -z $SGE_LOCALDIR ] ; then',
+            'if [[ -z $SGE_LOCALDIR ]] ; then',
             '   mkdir tmp',
             '   SGE_LOCALDIR=tmp',
             'fi']

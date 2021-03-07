@@ -15,7 +15,7 @@ class DataSubScript(SubScript):
             h_rt = self.sub_config['h_rt']
             node = self.sub_config.get('node', 'rt_C.large')
             num_node = self.sub_config.get('num_node', 1)
-            var_dict = {'SGE_QSUB': 'yes'}
+            var_dict = {'IS_SGE': 'yes'}
             command = qsub_command(code_path, group, h_rt, node, num_node, var_dict=var_dict)
             self.append(command)
 

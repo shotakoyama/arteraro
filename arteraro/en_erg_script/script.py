@@ -86,7 +86,7 @@ class NoiserSubScript(SubScript):
                 self.config['h_rt'],
                 self.config.get('node', 'rt_C.large'),
                 self.config.get('num_node', 1),
-                {'WORKDIR': '"${{BASEDIR}}/{}"'.format(n), 'SGE_QSUB': 'yes'}))
+                {'WORKDIR': '"${{BASEDIR}}/{}"'.format(n), 'IS_SGE': 'yes'}))
 
 
 def main():
