@@ -1,6 +1,7 @@
 # arteraro
 
 - ニューラル文法誤り訂正のための多様な規則を用いる人工誤り生成 (言語処理学会第27回年次大会)
+	- Please use `v1.0.0` to redroduce results of this paper.
 	- paper, outputs and analyses
 		- Please see [nymwa/anlp_nlp2021_aeg](https://github.com/nymwa/anlp_nlp2021_aeg)
 	- How to reproduce?
