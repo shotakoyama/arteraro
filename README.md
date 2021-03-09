@@ -60,7 +60,7 @@ Then, you have to rewrite a line in `fairseq/distributed_utils.py` like below, t
 
 I recommend you to install `apex` following https://github.com/pytorch/fairseq#requirements-and-installation
 
-### 4. install `arterarejo`
+### 4. install `arteraro`
 
 You run `pip install -e .` under `/path/to/arteraro`. Then now you can use arteraro in your environment.
 
