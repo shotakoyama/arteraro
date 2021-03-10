@@ -21,6 +21,8 @@ You can see at [arteraro/erarigilo/README.md](https://github.com/nymwa/arteraro/
 
 #### requirements
 - Python version >= 3.8
+	- fairseq v0.10.0~2 seems to fail with python 3.9 because of change of things about typing.
+	- So, if you want to use python 3.9, please use fairseq of the latest commit.
 - PyTorch version >= 1.7.0
 
 #### recommended
