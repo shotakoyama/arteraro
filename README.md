@@ -7,6 +7,13 @@
 	- また，論文中に載せられなかった実験結果や分析などを[こちら](https://github.com/nymwa/anlp_nlp2021_aeg/blob/main/analysis.pdf)で公開しています．こちらも参照ください．
 	- モデルによる訂正の出力は[こちら](https://github.com/nymwa/anlp_nlp2021_aeg/tree/main/outputs)に公開しました．
 	- 学習済みモデル（1モデル）を使って Google Colaboratory で文法誤り訂正を実行できる [Jupyter Notebook](https://gist.github.com/nymwa/982e92c4810f0ee31886378052af1459) を公開しました．
+	- You can download models for artificial error generation.
+		- afiksilo_dict.pickle (please wait a little)
+			- dictionary for afiksilo
+		- [orto_dict.pickle](https://drive.google.com/file/d/1qU-uywBWLtN4DQ_QUIevRRKPluPrpx1M/view?usp=sharing)
+			- dictionary for ortobruilo
+		- score.dat (please wait a little)
+			- model for falsliter
 	- paper, outputs and analyses
 		- Please see [nymwa/anlp_nlp2021_aeg](https://github.com/nymwa/anlp_nlp2021_aeg)
 	- How to reproduce?

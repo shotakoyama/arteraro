@@ -1,4 +1,4 @@
-from erarigilo.util import *
+from arteraro.erarigilo.util import *
 from .generator import *
 
 @register('standard_prep')

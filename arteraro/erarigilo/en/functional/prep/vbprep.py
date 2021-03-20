@@ -1,5 +1,5 @@
-from erarigilo.util import *
-from erarigilo.en.util.token import EnToken
+from arteraro.erarigilo.util import *
+from arteraro.erarigilo.en.util.token import EnToken
 
 class VBPrepInsertingIndexWiseMistaker(IndexWiseMistaker):
     def __init__(self):
