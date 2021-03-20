@@ -12,7 +12,8 @@ def register(name):
 
 
 def replace_environment_variable(path):
-    path = path.replace('${SGE_LOCALDIR}', os.environ['SGE_LOCALDIR'])
+    if 'SGE_LOCALDIR' in os.environ:
+        path = path.replace('${SGE_LOCALDIR}', os.environ['SGE_LOCALDIR'])
     return path
 
 
