@@ -1,5 +1,7 @@
 # erarigilo
 
+"erarigilo" derives from Esperanto, and means "error-making tool".
+
 More details for error generating rules are under `en`.
 
 ## commands

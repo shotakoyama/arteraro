@@ -1,5 +1,7 @@
 # arteraro
 
+Arteraro is derived from Esperanto and means "artificial error".
+
 - ニューラル文法誤り訂正のための多様な規則を用いる人工誤り生成 (言語処理学会第27回年次大会)
 	- Please use `v1.0.1` to redroduce results of this paper.
 	- 誤り生成規則は `v1.0.1` のものを使用しています．
