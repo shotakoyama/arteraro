@@ -1,8 +1,8 @@
 # arteraro
 
 - ニューラル文法誤り訂正のための多様な規則を用いる人工誤り生成 (言語処理学会第27回年次大会)
-	- Please use `v1.0.0` to redroduce results of this paper.
-	- 誤り生成規則は `v1.0.0` のものを使用しています．
+	- Please use `v1.0.1` to redroduce results of this paper.
+	- 誤り生成規則は `v1.0.1` のものを使用しています．
 	- 論文中のCoNLL-2014データセットに関するスコアに誤りがありましたので，修正原稿([リンク](https://github.com/nymwa/anlp_nlp2021_aeg/blob/main/nlp2021.pdf))を公開しました．CoNLL-14の値に関してはこちらを参照ください．
 	- また，論文中に載せられなかった実験結果や分析などを[こちら](https://github.com/nymwa/anlp_nlp2021_aeg/blob/main/analysis.pdf)で公開しています．こちらも参照ください．
 	- モデルによる訂正の出力は[こちら](https://github.com/nymwa/anlp_nlp2021_aeg/tree/main/outputs)に公開しました．
