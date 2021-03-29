@@ -65,6 +65,6 @@ setuptools.setup(
                 'pyspm_encode = arteraro.pyspm.pyspm:encode',
                 'pyspm_decode = arteraro.pyspm.pyspm:decode',
                 # reguligilo
-                'reguligilo = artetaro.reguligilo.main:encode_main',
+                'reguligilo = arteraro.reguligilo.main:encode_main',
                 'malreguligilo = arteraro.reguligilo.main:decode_main',
                 ]},)
