@@ -37,7 +37,7 @@ setuptools.setup(
                 'fa_result_jfleg = arteraro.fa_script.result.jfleg:main',
                 'fa_errant_cat2 = arteraro.fa_script.errant.cat2:main',
                 # fa_select
-                'fairseq_to_yaml = artetaro.fa_select.to_yaml:main',
+                'fairseq_to_yaml = arteraro.fa_select.to_yaml:main',
                 'roberta_rescore = arteraro.fa_select.rescore:main',
                 'select_best = arteraro.fa_select.select:main',
                 'rescore_with_lambda = arteraro.fa_select.select:rescore',
@@ -65,6 +65,6 @@ setuptools.setup(
                 'pyspm_encode = arteraro.pyspm.pyspm:encode',
                 'pyspm_decode = arteraro.pyspm.pyspm:decode',
                 # reguligilo
-                'reguligilo = artetaro.reguligilo.main:encode_main',
+                'reguligilo = arteraro.reguligilo.main:encode_main',
                 'malreguligilo = arteraro.reguligilo.main:decode_main',
                 ]},)
