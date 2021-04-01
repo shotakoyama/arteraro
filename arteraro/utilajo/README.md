@@ -1,4 +1,12 @@
-# m2_to_text
+# utilaĵo
+
+## progress
+
+This command shows progress bar for standard input.
+
+```
+cat a.txt | progress > /dev/null
+```
 
 ## m2_to_src
 
