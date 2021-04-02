@@ -50,16 +50,10 @@ setuptools.setup(
                 'falsliter-merge-model = arteraro.falsliter.merge_model:main',
                 'falsliter-dist = arteraro.falsliter.dist:main',
                 'falsliter-sample = arteraro.falsliter.sample:main',
-                # m2_to_text
-                'm2_to_src = arteraro.m2_to_text.main:m2_to_src',
-                'm2_to_trg = arteraro.m2_to_text.main:m2_to_trg',
-                'remove_identical = arteraro.m2_to_text.main:remove_identical',
                 # ortobruilo
                 'ortobruilo = arteraro.ortobruilo.main:main',
                 'ortobruilo-sample = arteraro.ortobruilo.main:sample',
                 'ortobruilo-prepare = arteraro.ortobruilo.main:prepare',
-                # progress
-                'progress = arteraro.progress.main:main',
                 # pyspm
                 'pyspm_train = arteraro.pyspm.pyspm:train',
                 'pyspm_encode = arteraro.pyspm.pyspm:encode',
@@ -67,4 +61,9 @@ setuptools.setup(
                 # reguligilo
                 'reguligilo = arteraro.reguligilo.main:encode_main',
                 'malreguligilo = arteraro.reguligilo.main:decode_main',
+                # utilajo
+                'progress = arteraro.utilajo.progress:main',
+                'm22src = arteraro.utilajo.m22src:m2_to_src',
+                'm22trg = arteraro.utilajo.m22trg:m2_to_trg',
+                'remove_identical = arteraro.utilajo.remove_identical:remove_identical',
                 ]},)
