@@ -1,13 +1,7 @@
 import sys
 from argparse import ArgumentParser
 
-def main():
-    parser = ArgumentParser()
-    parser.add_argument('src')
-    parser.add_argument('trg')
-    parser.add_argument('--min-len', type = int, default = 1)
-    parser.add_argument('--max-len', type = int, default = 500)
-    args = parser.parse_args()
+def glui(src, trg, min_len, max_len):
 
     with open(args.src) as f, open(args.trg) as g:
 
@@ -29,4 +23,13 @@ def main():
             if src_cond and trg_cond:
                 out = src + '\t' + trg
                 print(out)
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument('source')
+    parser.add_argument('target')
+    parser.add_argument('--min-len', type=int, default = 1)
+    parser.add_argument('--min-len', type=int, default = 500)
+
+    glui(args.source, args.target, args.min_len, args.max_len)
 

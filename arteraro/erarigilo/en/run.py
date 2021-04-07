@@ -1,14 +1,9 @@
 import sys
 import yaml
-from argparse import ArgumentParser
 from arteraro.erarigilo.util import *
 from . import *
 
-def main():
-    parser = ArgumentParser()
-    parser.add_argument('-c', '--config', dest = 'config', default = 'config.yaml')
-    args = parser.parse_args()
-
+def en_run(config):
     with open(args.config) as f:
         config = yaml.safe_load(f)
 

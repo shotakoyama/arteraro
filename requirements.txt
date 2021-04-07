@@ -6,7 +6,6 @@ PyYAML==5.4.1
 sacremoses==0.0.43
 sentencepiece==0.1.94
 spacy==2.3.2
-spacy-langdetect==0.1.2
 tabulate==0.8.7
 tokenizers==0.9.4
 torch==1.7.0

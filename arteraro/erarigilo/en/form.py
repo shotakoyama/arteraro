@@ -40,7 +40,7 @@ def form_trg(sent):
     lst = [token.cor for token in sent]
     return ' '.join(lst)
 
-def main():
+def en_form():
     for sent in sys.stdin:
         sent = sent.strip()
         sent = json.loads(sent)
