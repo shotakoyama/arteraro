@@ -14,11 +14,6 @@ setuptools.setup(
                 'auxt = arteraro.auxt.main:main',
                 # erg
                 'erg = arteraro.erarigilo.main:main',
-                # fa_select
-                'fairseq_to_yaml = arteraro.fa_select.to_yaml:main',
-                'roberta_rescore = arteraro.fa_select.rescore:main',
-                'select_best = arteraro.fa_select.select:main',
-                'rescore_with_lambda = arteraro.fa_select.select:rescore',
                 # falsliter
                 'falsliter-data-split = arteraro.falsliter.data_split:main',
                 'falsliter-preprocess = arteraro.falsliter.preprocess:main',
@@ -43,9 +38,18 @@ setuptools.setup(
                 'en-tokenize = arteraro.utilajo.tokenize:en',
                 'de-tokenize = arteraro.utilajo.tokenize:de',
                 'fr-tokenize = arteraro.utilajo.tokenize:fr',
+                'detekti = arteraro.utilajo.detekti:main',
                 'glui = arteraro.utilajo.glui:main',
+                'hazardi = arteraro.utilajo.hazardi:main',
+                'indeksi = arteraro.utilajo.indeksi:main',
+                'kunigi = arteraro.utilajo.kunigi:main',
+                'trunki = arteraro.utilajo.trunki:main',
                 'progress = arteraro.utilajo.progress:main',
                 'm22src = arteraro.utilajo.m22src:m2_to_src',
                 'm22trg = arteraro.utilajo.m22trg:m2_to_trg',
                 'remove_identical = arteraro.utilajo.remove_identical:remove_identical',
+                'conv_to_yaml = arteraro.utilajo.conv_to_yaml:main',
+                'mlm_scoring = arteraro.utilajo.mlm_scoring:main',
+                'mlm_reranking = arteraro.utilajo.mlm_reranking:main',
+                'select_best = arteraro.utilajo.select_best:main',
                 ]},)
