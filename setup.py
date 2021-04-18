@@ -8,8 +8,8 @@ setuptools.setup(
             'console_scripts':[
                 # afiksilo
                 'afiksilo = arteraro.afiksilo.afiksilo:main',
-                'afiksilo_prepare = arteraro.afiksilo.prepare:main',
-                'afiksilo_make_model = arteraro.afiksilo.make:main',
+                'afiksilo-prepare = arteraro.afiksilo.prepare:main',
+                'afiksilo-make-model = arteraro.afiksilo.make:main',
                 # auxt
                 'auxt = arteraro.auxt.main:main',
                 # erg
@@ -28,9 +28,9 @@ setuptools.setup(
                 'ortobruilo-sample = arteraro.ortobruilo.main:sample',
                 'ortobruilo-prepare = arteraro.ortobruilo.main:prepare',
                 # pyspm
-                'pyspm_train = arteraro.pyspm.train:main',
-                'pyspm_encode = arteraro.pyspm.encode:main',
-                'pyspm_decode = arteraro.pyspm.decode:main',
+                'pyspm-train = arteraro.pyspm.train:main',
+                'pyspm-encode = arteraro.pyspm.encode:main',
+                'pyspm-decode = arteraro.pyspm.decode:main',
                 # reguligilo
                 'reguligilo = arteraro.reguligilo.main:encode',
                 'malreguligilo = arteraro.reguligilo.main:decode',
@@ -38,6 +38,7 @@ setuptools.setup(
                 'en-tokenize = arteraro.utilajo.tokenize:en',
                 'de-tokenize = arteraro.utilajo.tokenize:de',
                 'fr-tokenize = arteraro.utilajo.tokenize:fr',
+                'ambidetekti = arteraro.utilajo.ambidetekti:main',
                 'detekti = arteraro.utilajo.detekti:main',
                 'glui = arteraro.utilajo.glui:main',
                 'hazardi = arteraro.utilajo.hazardi:main',
@@ -47,9 +48,9 @@ setuptools.setup(
                 'progress = arteraro.utilajo.progress:main',
                 'm22src = arteraro.utilajo.m22src:m2_to_src',
                 'm22trg = arteraro.utilajo.m22trg:m2_to_trg',
-                'remove_identical = arteraro.utilajo.remove_identical:remove_identical',
-                'conv_to_yaml = arteraro.utilajo.conv_to_yaml:main',
-                'mlm_scoring = arteraro.utilajo.mlm_scoring:main',
-                'mlm_reranking = arteraro.utilajo.mlm_reranking:main',
-                'select_best = arteraro.utilajo.select_best:main',
+                'remove-identical = arteraro.utilajo.remove_identical:remove_identical',
+                '2yaml = arteraro.utilajo.conv_to_yaml:main',
+                'mlm-scoring = arteraro.utilajo.mlm_scoring:main',
+                'mlm-reranking = arteraro.utilajo.mlm_reranking:main',
+                'select-best = arteraro.utilajo.select_best:main',
                 ]},)
