@@ -56,7 +56,7 @@ def show(sub_parsers):
     parser = sub_parsers.add_parser('show')
     sub_parsers = parser.add_subparsers()
 
-    en = form_sub_parsers.add_parser('en')
+    en = sub_parsers.add_parser('en')
     en.add_argument('--hide-history', action = 'store_true')
     en.add_argument('--color', action = 'store_true')
     en.add_argument('--cor', default = None)

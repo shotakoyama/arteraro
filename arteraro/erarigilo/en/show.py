@@ -11,57 +11,81 @@ def decode(sent):
     sent = EnSent.decode(sent, token_class = EnToken)
     return sent
 
-def is_free(cor, tag, pos, dep):
-    return (cor is None) and (tag is None) and (pos in None) and (dep is None)
+def o_or_x(p):
+    return 'o' if p else 'x'
 
-def is_ok(cor, tag, pos, dep, token):
-    cor_cond = (cor is None) or (cor == token.cor)
-    tag_cond = (tag is None) or (tag == token.tag)
-    pos_cond = (pos is None) or (pos == token.pos)
-    dep_cond = (dep is None) or (dep == token.dep)
-    return cor_cond and tag_cond and pos_cond and dep_cond
+def blank(x):
+    return x if x is not None else '____'
 
-def check(cor, tag, pos, dep, sent):
-    if is_free(cor, tag, pos, dep):
-        return True
-    return any(is_ok(cor, tag, pos, dep, token) for token in sent)
+def add_color(x):
+    return '\033[31m' + x + '\033[0m'
 
-def make_row(color_cond, cor_query, tag_query, pos_query, dep_query, token_query):
-    left_space = 'o' if token.left_space else 'x'
-    right_space = 'o' if token.right_space else 'x'
-    org_str = token.org if token.org is not None else '____'
-    cor_str = token.cor if token.cor is not None else '____'
-    tag_str = token.tag if token.tag is not None else '____'
-    pos_str = token.pos if token.pos is not None else '____'
-    dep_str = token.dep if token.dep is not None else '____'
-    lem_str = token.lemma if token.lemma is not None else '____'
-    nrm_str = token.norm if token.norm is not None else '____'
-    ent_type = token.ent_type if token.ent_type is not None else '____'
-    ent_iob = token.ent_iob if token.ent_iob is not None else '____'
-    if len(token.history) > 0:
-        history = ' '.join(token.history)
-    else:
-        history = '____'
+class Conds:
+    def __init__(self, color = None, cor = None, tag = None, pos = None, dep = None):
+        self.color = color
+        self.cor = cor
+        self.tag = tag
+        self.pos = pos
+        self.dep = dep
 
-    if color_cond and (cor_query == cor_str):
-        cor = '\033[31m' + cor + '\033[0m'
-    if color_cond and (tag_query == tag_str):
-        tag = '\033[31m' + tag + '\033[0m'
-    if color_cond and (pos_query == pos_str):
-        pos = '\033[31m' + pos + '\033[0m'
-    if color_cond and (dep_query == dep_str):
-        dep = '\033[31m' + dep + '\033[0m'
-    cond = '*' if (not is_free(cor_query, tag_query, pos_query, dep_query)) and is_ok(cor_query, tag_query, pos_query, dep_query, token) else ' '
-    return [str(token.index), str(token.shift), org, cor, cond, left_space, right_space, tag, pos, dep, lem, nrm, ent_type, ent_iob, history]
+    def is_free(self):
+        return (self.cor is None) and (self.tag is None) and (self.pos is None) and (self.dep is None)
 
-def make_table(color, cor, tag, pos, dep, sent):
-    lst = []
-    for token in sent:
-        lst.append(token)
-        lst += token.addition
-    lst = [make_row(color, cor, tag, pos, dep, token) for token in lst]
-    tab = tabulate(lst, ['i', 'shift', 'org', 'cor', 'cond', 'l_space', 'r_space', 'tag', 'pos', 'dep', 'lemma', 'norm', 'ent_type', 'ent_iob', 'history'], tablefmt = 'psql')
-    return tab
+    def is_ok(self, token):
+        return ((self.cor is None) or (self.cor == token.cor)) and ((self.tag is None) or (self.tag == token.tag)) and ((self.pos is None) or (self.pos == token.pos)) and ((self.dep is None) or (self.dep == token.dep))
+
+    def check(self, sent):
+        if self.is_free():
+            return True
+        return any(self.is_ok(token) for token in sent)
+
+class Row:
+    def __init__(self, cond, token):
+        self.token = token
+        self.left_space = o_or_x(token.left_space)
+        self.right_space = o_or_x(token.right_space)
+        self.org = blank(token.org)
+        self.cor = blank(token.cor)
+        self.tag = blank(token.tag)
+        self.pos = blank(token.pos)
+        self.dep = blank(token.dep)
+        self.lem = blank(token.lemma)
+        self.nrm = blank(token.norm)
+        self.ent_type = blank(token.ent_type)
+        self.ent_iob = blank(token.ent_iob)
+        if len(token.history) > 0:
+            self.history = ' '.join(token.history)
+        else:
+            self.history = '____'
+
+        if cond.color:
+            if (token.cor is not None) and (token.cor == cond.cor):
+                self.cor = add_color(self.cor)
+            if (token.tag is not None) and (token.tag == cond.tag):
+                self.tag = add_color(self.tag)
+            if (token.pos is not None) and (token.pos == cond.pos):
+                self.pos = add_color(self.pos)
+            if (token.dep is not None) and (token.dep == cond.dep):
+                self.dep = add_color(self.dep)
+
+        if (not cond.is_free()) and cond.is_ok(token):
+            self.p = '*'
+        else:
+            self.p = ' '
+
+    def __call__(self):
+        return (str(self.token.index), str(self.token.shift), self.org, self.cor, self.p, self.left_space, self.right_space, self.tag, self.pos, self.dep, self.lem, self.nrm, self.ent_type, self.ent_iob, self.history)
+
+class Table:
+    def __init__(self, cond, sent):
+        self.row_list = []
+        for token in sent:
+            self.row_list.append(Row(cond, token))
+            self.row_list += [Row(cond, x) for x in token.addition]
+        self.col_list = ['i', 'shift', 'org', 'cor', 'cond', 'l_space', 'r_space', 'tag', 'pos', 'dep', 'lemma', 'norm', 'ent_type', 'ent_iob', 'history']
+
+    def __call__(self):
+        return tabulate([x() for x in self.row_list], self.col_list, tablefmt = 'psql')
 
 def en_show(
         hide_history = False,
@@ -71,10 +95,12 @@ def en_show(
         pos = None,
         dep = None):
 
+    cond = Conds(color, cor, tag, pos, dep)
+
     for sent in sys.stdin:
         sent = decode(sent)
-        if check(cor, tag, pos, dep, sent):
-            tab = make_table(color, cor, tag, pos, dep, sent)
+        if cond.check(sent):
+            tab = Table(cond, sent)
             print('src: ' + form_src(sent))
             print('trg: ' + form_trg(sent))
             if not hide_history:
@@ -92,5 +118,5 @@ def en_show(
                     history.append(desc)
                 history_len = len(history)
                 print(f'history ({history_len}): ' + ' '.join(history))
-            print(tab)
+            print(tab())
 

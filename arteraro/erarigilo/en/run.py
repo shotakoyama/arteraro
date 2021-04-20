@@ -4,7 +4,7 @@ from arteraro.erarigilo.util import *
 from . import *
 
 def en_run(config):
-    with open(args.config) as f:
+    with open(config) as f:
         config = yaml.safe_load(f)
 
     generator_list = []
