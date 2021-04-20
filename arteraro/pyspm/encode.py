@@ -4,7 +4,7 @@ from pathlib import Path
 from argparse import ArgumentParser
 
 def encode(args):
-    sp = spm.SentencePieceProcessor(model_file = Path(args.model_file).resolve())
+    sp = spm.SentencePieceProcessor(model_file = str(Path(args.model_file).resolve()))
 
     for x in sys.stdin:
         x = x.strip()

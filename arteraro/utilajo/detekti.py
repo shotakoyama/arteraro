@@ -19,5 +19,5 @@ def main():
     parser.add_argument('-r', '--reverse', dest='rev', action = 'store_true')
     args = parser.parse_args()
 
-    detect(args.model_path, args.k, args.lang, args.rev)
+    detect(args.model, args.k, args.lang, args.rev)
 

@@ -9,9 +9,9 @@ def make_warm_checker():
     lst += [x for x in range(0x2030, 0x205f)] # general punctuation
     lst += [x for x in range(0x20a0, 0x20d0)] # currency symbol
     lst += [0x2190, 0x2191, 0x2192, 0x2193, 0x21d2, 0x2264, 0x2265]
-    lst += [0x2581, 0x25a0, 0x25a1, 0x25a8, 0x25cf, 0x2605]
     lst += [x for x in range(0x3000, 0xa000)]
     lst += [x for x in range(0xac00, 0xd800)]
+    lst += [0xfffd]
     return lst
 
 def make_base_checker():
@@ -22,8 +22,6 @@ def make_base_checker():
     lst += [x for x in range(0x2010, 0x2028)] # general punctuation
     lst += [x for x in range(0x2030, 0x205f)] # general punctuation
     lst += [x for x in range(0x20a0, 0x20d0)] # currency symbol
-    lst += [0x2581] # word boundary of sentencepiece
-    lst += [0x25a1, 0x25a8] # char mask and word mask
     return lst
 
 def make_limit_checker():

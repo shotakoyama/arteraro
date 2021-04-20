@@ -33,8 +33,10 @@ setuptools.setup(
                 'pyspm-decode = arteraro.pyspm.decode:main',
                 # reguligilo
                 'reguligilo = arteraro.reguligilo.main:encode',
+                'ambireguligilo = arteraro.reguligilo.main:ambiencode',
                 'malreguligilo = arteraro.reguligilo.main:decode',
                 # utilajo
+                'space-normalize = arteraro.utilajo.space_normalize:main',
                 'en-tokenize = arteraro.utilajo.tokenize:en',
                 'de-tokenize = arteraro.utilajo.tokenize:de',
                 'fr-tokenize = arteraro.utilajo.tokenize:fr',
@@ -44,6 +46,7 @@ setuptools.setup(
                 'hazardi = arteraro.utilajo.hazardi:main',
                 'indeksi = arteraro.utilajo.indeksi:main',
                 'kunigi = arteraro.utilajo.kunigi:main',
+                'tondi = arteraro.utilajo.tondi:main',
                 'trunki = arteraro.utilajo.trunki:main',
                 'progress = arteraro.utilajo.progress:main',
                 'm22src = arteraro.utilajo.m22src:m2_to_src',

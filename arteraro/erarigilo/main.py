@@ -48,7 +48,7 @@ def form(main_sub_parsers):
     parser = main_sub_parsers.add_parser('form')
     sub_parsers = parser.add_subparsers()
 
-    en = form_sub_parsers.add_parser('en')
+    en = sub_parsers.add_parser('en')
     en.set_defaults(handler = command_en_form)
 
 
