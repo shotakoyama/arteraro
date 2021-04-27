@@ -10,8 +10,12 @@ class MTPreprocessJobScript(PreprocessJobScript):
         source_lang = self.config['source_lang']
         target_lang = self.config['target_lang']
 
-        self.append('zcat train.{}.gz > ${{SGE_LOCALDIR}}/train.src &'.format(source_lang))
-        self.append('zcat train.{}.gz > ${{SGE_LOCALDIR}}/train.trg &'.format(target_lang))
+        compressed_source = 'train.{}.gz'.format(source_lang)
+        compressed_target = 'train.{}.gz'.format(target_lang)
+        extracted_source = '${{SGE_LOCALDIR}}/train.{}'.format(source_lang)
+        extracted_target = '${{SGE_LOCALDIR}}/train.{}'.format(target_lang)
+        self.append('zcat {} > {} &'.format(compressed_source, extracted_source))
+        self.append('zcat {} > {} &'.format(compressed_target, extracted_target))
         self.append('wait')
         self.append('')
 
@@ -19,7 +23,7 @@ class MTPreprocessJobScript(PreprocessJobScript):
         valid_pref = Path(self.config['preprocess']['valid']).resolve()
         dest_dir = Path('{}/data-bin'.format(self.index)).resolve()
         threads = self.config['threads']
-        src_dict = self.make_src_dict_path()
+        src_dict = self.make_dict_path(source_lang)
         trg_dict = None
         joined_dict = self.config['preprocess'].get('joined_dict', True)
 

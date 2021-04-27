@@ -39,7 +39,7 @@ class SubScript(Script):
         return None
 
     def make_var_dict(self, script):
-        workdir = str(Path(str(script.index)).resolve())
+        workdir = self.make_workdir(script)
         return {'WORKDIR': workdir, 'IS_SGE': 'yes'}
 
     def add_qsub(self, script):

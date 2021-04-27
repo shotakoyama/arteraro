@@ -1,15 +1,15 @@
-from arteraro.auxt.script import SubScript
+from arteraro.auxt.data.sub import DataSubScript
 
-class PreprocessSubScript(SubScript):
+class PreprocessSubScript(DataSubScript):
     def __init__(self, script_list, first=False):
         self.first = first
         super().__init__(script_list)
 
     def make_path(self):
         if self.first:
-            path = 'sub_first_preprocess.sh'
+            path = 'first_preprocess.sh'
         else:
-            path = 'sub_preprocess.sh'
+            path = 'preprocess.sh'
         return path
 
     def make_node(self):

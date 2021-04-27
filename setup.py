@@ -56,4 +56,6 @@ setuptools.setup(
                 'mlm-scoring = arteraro.utilajo.mlm_scoring:main',
                 'mlm-reranking = arteraro.utilajo.mlm_reranking:main',
                 'select-best = arteraro.utilajo.select_best:main',
+                'compare-vocab = arteraro.utilajo.check_fairseq_vocab:main',
+                'split-titles = arteraro.utilajo.split_titles:main',
                 ]},)

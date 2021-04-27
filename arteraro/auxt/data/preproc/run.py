@@ -6,7 +6,11 @@ class PreprocessRunScript(RunScript):
         super().__init__(script_list)
 
     def make_path(self):
-        return 'run_preprocess.sh'
+        if self.first:
+            path = 'first_preprocess.sh'
+        else:
+            path = 'preprocess.sh'
+        return path
 
     def make_node(self):
         return 'rt_C.large'

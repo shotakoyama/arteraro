@@ -1,8 +1,8 @@
-from arteraro.auxt.script import SubScript
+from arteraro.auxt.data.sub import DataSubScript
 
-class PrepareSubScript(SubScript):
+class PrepareSubScript(DataSubScript):
     def make_path(self):
-        return 'sub_prepare.sh'
+        return 'prepare.sh'
 
     def make_node(self):
         return 'rt_C.large'
