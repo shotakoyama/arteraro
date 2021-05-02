@@ -4,6 +4,8 @@ from .parser.preproc import set_preproc
 from .parser.train import set_train
 from .parser.generation import set_generation
 from .parser.score import set_score
+from .parser.split import set_split
+from .parser.rtt import set_rtt
 
 def main():
     parser = ArgumentParser()
@@ -14,6 +16,8 @@ def main():
     set_train(sub_parsers)
     set_generation(sub_parsers)
     set_score(sub_parsers)
+    set_split(sub_parsers)
+    set_rtt(sub_parsers)
 
     args = parser.parse_args()
 

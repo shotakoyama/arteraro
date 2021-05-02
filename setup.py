@@ -58,4 +58,5 @@ setuptools.setup(
                 'select-best = arteraro.utilajo.select_best:main',
                 'compare-vocab = arteraro.utilajo.check_fairseq_vocab:main',
                 'split-titles = arteraro.utilajo.split_titles:main',
+                'nltk-detokenize = arteraro.utilajo.nltk_detokenize:main',
                 ]},)

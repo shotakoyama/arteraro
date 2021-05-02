@@ -23,6 +23,9 @@ class SubScript(Script):
         self.script_list = script_list
         super().__init__()
 
+    def make_workdir(self, script):
+        return str(Path(script.make_path()).parent.resolve())
+
     def make_group(self):
         return self.sub_config['group']
 

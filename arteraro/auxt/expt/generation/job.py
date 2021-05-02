@@ -1,6 +1,6 @@
 from pathlib import Path
 from arteraro.auxt.expt.job import ExptJobScript
-from .fairseq import fairseq_interactive_command
+from arteraro.auxt.util.fairseq_interactive import fairseq_interactive_command
 
 class GenerationJobScript(ExptJobScript):
     def make_path(self):

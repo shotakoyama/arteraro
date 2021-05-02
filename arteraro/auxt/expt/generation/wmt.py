@@ -25,7 +25,7 @@ class WMTGenerationJobScript(GenerationJobScript):
         self.append('sacrebleu -t {} -l {}-{} --echo src \\'.format(
             self.dataset_name, self.src_lang, self.trg_lang))
         self.append('   | {} \\'.format(tokenize_command(self.src_lang)))
-        self.append('   | reguligilo -a \\')
+        self.append('   | reguligilo --all --quote \\')
         bpe_model_path = self.get_bpe_model_path()
         self.append('   | pyspm-encode --model-file {} \\'.format(bpe_model_path))
         self.append('   | {} \\'.format(self.make_interactive_command()))

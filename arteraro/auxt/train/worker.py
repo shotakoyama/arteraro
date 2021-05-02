@@ -2,12 +2,6 @@ from pathlib import Path
 from arteraro.auxt.script import JobScript
 from .fairseq import FairseqTrainCommand
 
-def make_data_bins(data_path, data_indices):
-    data_bin_list = [Path(data_path) / str(n) / 'data-bin' for n in data_indices]
-    data_bin_list = [str(path.resolve()) for path in data_bin_list]
-    data_bins = ':'.join(data_bin_list)
-    return data_bins
-
 class WorkerJobScript(JobScript):
     localdir = True
 
@@ -20,6 +14,22 @@ class WorkerJobScript(JobScript):
 
     def make_path(self):
         return '{}/worker.sh'.format(self.index)
+
+    def p_copy(self):
+        return self.num_node > 1
+
+    def make_data_bin_path(self, data_path, index):
+        if self.p_copy():
+            path = '${{SGE_LOCALDIR}}/{}/data-bin'.format(index)
+        else:
+            path = Path(data_path) / str(index) / 'data-bin'
+            path = str(path.resolve())
+        return path
+
+    def make_data_bins(self, data_path, data_indices):
+        data_bin_list = [self.make_data_bin_path(data_path, index) for index in data_indices]
+        data_bins = ':'.join(data_bin_list)
+        return data_bins
 
     def make_copy(self, data_indices):
         for index in range(len(data_indices)):
@@ -35,7 +45,7 @@ class WorkerJobScript(JobScript):
         return data_indices
 
     def make_train_command(self, data_indices):
-        data_bin = make_data_bins(self.config['data'], data_indices)
+        data_bin = self.make_data_bins(self.config['data'], data_indices)
         log_file = str(Path(str(self.index)).resolve() / 'train.log')
         command = FairseqTrainCommand(data_bin, log_file)
 
@@ -65,7 +75,7 @@ class WorkerJobScript(JobScript):
         command.clip_norm(self.config['train'].get('clip_norm', 1.0))
         command.weight_decay(self.config['train'].get('weight_decay', 1.0e-03))
         command.label_smoothed_cross_entropy(self.config['train'].get('label_smoothing', 0.1))
-        if self.num_node > 1:
+        if self.p_copy():
             command.distributed(self.num_node, self.gpu_per_node, self.port)
         return command
 
