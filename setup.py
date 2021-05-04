@@ -48,6 +48,7 @@ setuptools.setup(
                 'kunigi = arteraro.utilajo.kunigi:main',
                 'tondi = arteraro.utilajo.tondi:main',
                 'trunki = arteraro.utilajo.trunki:main',
+                'kuntrunki = arteraro.utilajo.kuntrunki:main',
                 'progress = arteraro.utilajo.progress:main',
                 'm22src = arteraro.utilajo.m22src:m2_to_src',
                 'm22trg = arteraro.utilajo.m22trg:m2_to_trg',

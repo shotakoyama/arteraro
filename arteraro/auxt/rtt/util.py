@@ -1,10 +1,10 @@
 from arteraro.auxt.util.load import load_config
 
-def get_num_indices():
+def get_rtt_indices():
     config = load_config()
     return [x for x in range(config['indices'])]
 
-def get_num_segments():
+def get_rtt_segments():
     config = load_config()
     return [x for x in range(config['segments'])]
 

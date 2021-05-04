@@ -66,7 +66,8 @@ class RTTForeJobScript(RTTTranslateJobScript):
 
     def make_translation(self):
         self.append('zcat {} \\'.format(self.get_input_file_path()))
-        self.append('   | tee >(indeksi | tee ${SGE_LOCALDIR}/namedpipe > /dev/null) \\')
+        self.append('   | tee >(indeksi | cat > ${SGE_LOCALDIR}/namedpipe) \\')
+        self.append('   | en-tokenize \\')
         self.append('   | reguligilo --all --quote \\')
         self.append('   | pyspm-encode --model-file $BPEMODEL \\')
         self.append('   | trunki -n {} -r -s ${{SGE_LOCALDIR}}/namedpipe -t ${{SGE_LOCALDIR}}/original.txt \\'.format(

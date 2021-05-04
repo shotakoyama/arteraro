@@ -1,7 +1,7 @@
 from pathlib import Path
 from arteraro.auxt.script import JobScript, RunScript, SubScript
-from arteraro.auxt.util.load import load_config
 from arteraro.auxt.util.run import generate_run
+from arteraro.auxt.rtt.util import get_rtt_indices
 
 class RTTSplitJobScript(JobScript):
     localdir = True
@@ -18,16 +18,8 @@ class RTTSplitJobScript(JobScript):
         self.append('zcat {} > ${{SGE_LOCALDIR}}/corpus.txt'.format(input_data_path))
         self.append('')
 
-        num_threads = self.config['threads']
-        num_lines = self.config['lines']
-
-        self.append('parallel --pipe -j {} -k --L {} "en-tokenize" \\'.format(num_threads, num_lines))
-        self.append('   < ${SGE_LOCALDIR}/corpus.txt \\')
-        self.append('   > ${SGE_LOCALDIR}/tokenized.txt')
-        self.append('')
-
         num_segments = self.config['segments']
-        self.append('split -d -nl/{} ${{SGE_LOCALDIR}}/tokenized.txt ${{SGE_LOCALDIR}}/split.'.format(num_segments))
+        self.append('split -d -nl/{} ${{SGE_LOCALDIR}}/corpus.txt ${{SGE_LOCALDIR}}/split.'.format(num_segments))
         self.append('')
 
         for i in range(num_segments):
@@ -51,13 +43,10 @@ class RTTSplitSubScript(SubScript):
         return self.sub_config['split']['h_rt']
 
     def make_node(self):
-        return self.sub_config['split'].get('node', 'rt_C.large')
+        return self.sub_config['split'].get('node', 'rt_C.small')
 
 def rtt_split():
-    config = load_config()
-
-    num_indices = config['indices']
-    script_list = [RTTSplitJobScript(index) for index in range(num_indices)]
+    script_list = [RTTSplitJobScript(index) for index in get_rtt_indices()]
     generate_run(script_list,
             RTTSplitRunScript,
             RTTSplitSubScript)
