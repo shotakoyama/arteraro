@@ -101,8 +101,15 @@ def en_show(
         sent = decode(sent)
         if cond.check(sent):
             tab = Table(cond, sent)
-            print('src: ' + form_src(sent))
-            print('trg: ' + form_trg(sent))
+
+            if sent.trg is None:
+                print('src: ' + form_src(sent))
+                print('trg: ' + form_trg(sent))
+            else:
+                print('src    : ' + form_src(sent))
+                print('rtt({}): '.format(sent.trg['bridge']) + form_trg(sent))
+                print('trg    : ' + sent.trg['text'])
+
             if not hide_history:
                 history = []
                 for record in sent.history:

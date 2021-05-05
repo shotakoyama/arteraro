@@ -52,8 +52,7 @@ class ReguligiloWrapper:
                 norm = tok.norm_,
                 lower = tok.lower_,
                 ent_type = tok.ent_type_,
-                ent_iob = tok.ent_iob_,
-                )
+                ent_iob = tok.ent_iob_)
 
     def doc_to_sent(self, doc):
         sent = [self.convert_token(token) for token in doc]
@@ -61,14 +60,24 @@ class ReguligiloWrapper:
         return sent
 
 
-def en_ready(quote=False):
+def en_ready(quote=True):
     nlp = SpacyWrapper()
     encoder = ReguligiloWrapper(quote)
 
     for x in sys.stdin:
-        doc = nlp.line_to_doc(x)
-        sent = encoder.doc_to_sent(doc)
-        if len(sent) > 0:
-            js = json.dumps(sent.encode(), ensure_ascii = False)
-            print(js)
+        x = x.strip()
+        x = json.loads(x)
+
+        trg = encoder.doc_to_sent(nlp.line_to_doc(x['trg'])).encode()
+        dct = {'trg': trg}
+
+        lang_list = [lang for lang in x if lang != 'trg']
+        for lang in lang_list:
+            src = x[lang]
+            if src is not None:
+                src = encoder.doc_to_sent(nlp.line_to_doc(src)).encode()
+            dct[lang] = src
+
+        js = json.dumps(dct, ensure_ascii = False)
+        print(js)
 

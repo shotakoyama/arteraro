@@ -5,11 +5,16 @@ from .en.form import en_form
 from .en.show import en_show
 
 def command_en_ready(args):
-    en_ready(quote=args.quote)
+    quote = not args.no_quote_regularization
+    en_ready(quote=quote)
 
 
 def command_en_run(args):
-    en_run(config=args.config)
+    if args.languages is None:
+        lang_list = None
+    else:
+        lang_list = args.languages.split(':')
+    en_run(config=args.config, ratio=args.ratio, lang_list=lang_list)
 
 
 def command_en_form(args):
@@ -31,7 +36,7 @@ def ready(main_sub_parsers):
     sub_parsers = parser.add_subparsers()
 
     en = sub_parsers.add_parser('en')
-    en.add_argument('--quote', action = 'store_true')
+    en.add_argument('--no-quote-regularization', action = 'store_true')
     en.set_defaults(handler = command_en_ready)
 
 
@@ -41,6 +46,8 @@ def run(main_sub_parsers):
 
     en = sub_parsers.add_parser('en')
     en.add_argument('-c', '--config', default = 'config.yaml')
+    en.add_argument('-r', '--ratio', type=float, default=0.5)
+    en.add_argument('-l', '--languages', default=None)
     en.set_defaults(handler = command_en_run)
 
 

@@ -1,71 +1,85 @@
 import sys
+import json
 from contextlib import ExitStack
 from argparse import ArgumentParser
 
 class Parallel:
-    def __init__(self, src_file, trg_file):
-        self.src_file = src_file
-        self.trg_file = trg_file
+    def __init__(self, lang, indices_file, source_file):
+        self.lang = lang
+        self.indices_file = indices_file
+        self.source_file = source_file
         self.feed()
 
     def empty(self):
         return self.index is None
 
     def top(self):
-        return self.index, self.src, self.trg
+        return self.index, self.source
 
     def feed(self):
-        src = self.src_file.readline()
-        trg = self.trg_file.readline()
-        if src == '':
+        index = self.indices_file.readline().strip()
+        source = self.source_file.readline().strip()
+        if index == '': # end of file
             self.index = None
-            self.src = None
-            self.trg = None
+            self.source = None
         else:
-            index, trg = trg.split('\t')
-            self.index = index
-            self.src = src.strip()
-            self.trg = trg.strip()
+            self.index = int(index)
+            self.source = source
+
 
 class Kunigilo:
-    def __init__(self, src_files, trg_files):
-        assert len(src_files) == len(trg_files)
-        self.corpora = [Parallel(src_file, trg_file) for src_file, trg_file in zip(src_files, trg_files)]
+    def __init__(self, lang_list, indices_files, source_files, target_file):
+        self.corpora = [Parallel(lang, indices_file, source_file)
+                for lang, indices_file, source_file
+                in zip(lang_list, indices_files, source_files)]
+        self.target_file = target_file
+        self.index = 0
 
     def check(self):
         return not all(corpus.empty() for corpus in self.corpora)
 
     def extract_heads(self):
-        min_index = min([corpus.index for corpus in self.corpora if not corpus.empty()])
-        heads = []
-        for corpus in self.corpora:
-            if corpus.index == min_index:
-                heads.append(corpus)
+        heads = [corpus
+                for corpus
+                in self.corpora
+                if corpus.index == self.index]
         return heads
 
     def feed(self):
-        heads = self.extract_heads()
-        srcs = [corpus.src for corpus in heads]
-        trgs = [corpus.trg for corpus in heads]
-        assert len(set(trgs)) == 1
-        for corpus in heads:
-            corpus.feed()
-        line = '\t'.join(trgs[0:1] + srcs)
-        return line
+        target = self.target_file.readline().strip()
+        dct = {'trg': target}
+        for corpus in self.corpora:
+            if corpus.index == self.index:
+                dct[corpus.lang] = corpus.source
+                corpus.feed()
+            else:
+                dct[corpus.lang] = None
+        self.index += 1
+        return dct
+
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('src')
-    parser.add_argument('trg')
+    parser.add_argument('langs')
+    parser.add_argument('indices')
+    parser.add_argument('source')
+    parser.add_argument('target')
     args = parser.parse_args()
 
-    src_list = args.src.split(':')
-    trg_list = args.trg.split(':')
+    lang_list = args.langs.split(':')
+    indices_list = args.indices.split(':')
+    source_list = args.source.split(':')
+    target = args.target
+    assert len(lang_list) == len(indices_list) == len(source_list)
+
     with ExitStack() as stack:
-        src_files = [stack.enter_context(open(filename)) for filename in src_list]
-        trg_files = [stack.enter_context(open(filename)) for filename in trg_list]
-        ilo = Kunigilo(src_files, trg_files)
+        indices_files = [stack.enter_context(open(filename)) for filename in indices_list]
+        source_files = [stack.enter_context(open(filename)) for filename in source_list]
+        target_file = stack.enter_context(open(target))
+
+        ilo = Kunigilo(lang_list, indices_files, source_files, target_file)
         while ilo.check():
-            line = ilo.feed()
-            print(line)
+            x = ilo.feed()
+            x = json.dumps(x, ensure_ascii = False)
+            print(x)
 

@@ -6,6 +6,9 @@ from .parser.generation import set_generation
 from .parser.score import set_score
 from .parser.split import set_split
 from .parser.rtt import set_rtt
+from .parser.tokenize import set_tokenize
+from .parser.ready import set_ready
+from .parser.erg import set_erg
 
 def main():
     parser = ArgumentParser()
@@ -18,6 +21,9 @@ def main():
     set_score(sub_parsers)
     set_split(sub_parsers)
     set_rtt(sub_parsers)
+    set_tokenize(sub_parsers)
+    set_ready(sub_parsers)
+    set_erg(sub_parsers)
 
     args = parser.parse_args()
 

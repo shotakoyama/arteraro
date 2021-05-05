@@ -45,6 +45,7 @@ setuptools.setup(
                 'glui = arteraro.utilajo.glui:main',
                 'hazardi = arteraro.utilajo.hazardi:main',
                 'indeksi = arteraro.utilajo.indeksi:main',
+                'target-jsonize = arteraro.utilajo.target_jsonize:main',
                 'kunigi = arteraro.utilajo.kunigi:main',
                 'tondi = arteraro.utilajo.tondi:main',
                 'trunki = arteraro.utilajo.trunki:main',

@@ -18,33 +18,35 @@ class RTTJoinJobScript(JobScript):
         return '{}/{}/join.sh'.format(self.index, self.segment)
 
     def make_extracted_files(self):
-        for lang in get_bridge_language_list():
-            source = str(Path('{}/{}/{}/source.gz'.format(self.index, self.segment, lang)).resolve())
-            self.append('zcat {} | sacremoses -l en detokenize | nltk-detokenize | progress > ${{SGE_LOCALDIR}}/source.{} &'.format(source, lang))
-        self.append('wait')
-        self.append('')
+        split = str(Path('{}/{}/split.gz'.format(self.index, self.segment)).resolve())
+        self.append('zcat {} > ${{SGE_LOCALDIR}}/target.en &'.format(split))
 
         for lang in get_bridge_language_list():
-            target = str(Path('{}/{}/{}/target.gz'.format(self.index, self.segment, lang)).resolve())
-            self.append('zcat {} | progress > ${{SGE_LOCALDIR}}/target.{} &'.format(target, lang))
+            back = str(Path('{}/{}/{}/back.gz'.format(self.index, self.segment, lang)).resolve())
+            self.append('zcat {} | cut -f 1 > ${{SGE_LOCALDIR}}/indices.{} &'.format(back, lang))
+            self.append('zcat {} | cut -f 2 | sacremoses -l en detokenize | nltk-detokenize | progress > ${{SGE_LOCALDIR}}/source.{} &'.format(back, lang))
         self.append('wait')
         self.append('')
 
     def make(self):
         self.make_extracted_files()
 
+        lang_list = ':'.join(get_bridge_language_list())
+        indices_file_list = ':'.join(['${{SGE_LOCALDIR}}/indices.{}'.format(lang) for lang in get_bridge_language_list()])
         source_file_list = ':'.join(['${{SGE_LOCALDIR}}/source.{}'.format(lang) for lang in get_bridge_language_list()])
-        target_file_list = ':'.join(['${{SGE_LOCALDIR}}/target.{}'.format(lang) for lang in get_bridge_language_list()])
 
         self.append('kunigi \\')
+        self.append('   {} \\'.format(lang_list))
+        self.append('   {} \\'.format(indices_file_list))
         self.append('   {} \\'.format(source_file_list))
-        self.append('   {} \\'.format(target_file_list))
+        self.append('   ${SGE_LOCALDIR}/target.en \\')
         self.append('   | progress \\')
         self.append('   > ${SGE_LOCALDIR}/joined.txt')
         self.append('')
 
         ratio = self.config.get('ratio', 2.0)
-        self.append('kuntrunki --ratio {} < ${{SGE_LOCALDIR}}/joined.txt \\'.format(ratio))
+        self.append('kuntrunki {} --ratio {} --remove-target-without-source \\'.format(lang_list, ratio))
+        self.append('   < ${SGE_LOCALDIR}/joined.txt \\')
         self.append('   | pigz -c > {}'.format(str(Path('{}/{}/joined.gz'.format(self.index, self.segment)).resolve())))
 
 class RTTJoinRunScript(RunScript):

@@ -48,7 +48,6 @@ class RTTTranslateJobScript(JobScript):
         self.append('')
 
     def make(self):
-        self.make_inputs()
         self.make_variables()
         self.make_namedpipe()
         self.make_translation()
@@ -58,20 +57,16 @@ class RTTTranslateJobScript(JobScript):
 class RTTForeJobScript(RTTTranslateJobScript):
     phase = 'fore'
 
-    def get_input_file_path(self):
-        return str(Path('{}/{}/split.gz'.format(self.index, self.segment)).resolve())
-
-    def make_inputs(self):
-        pass
-
     def make_translation(self):
-        self.append('zcat {} \\'.format(self.get_input_file_path()))
-        self.append('   | tee >(indeksi | cat > ${SGE_LOCALDIR}/namedpipe) \\')
+        input_file_path = str(Path('{}/{}/split.gz'.format(self.index, self.segment)).resolve())
+        max_len = self.get_max_length()
+
+        self.append('zcat {} \\'.format(input_file_path))
+        self.append('   | tee >(indeksi --only-indices | cat > ${SGE_LOCALDIR}/namedpipe) \\')
         self.append('   | en-tokenize \\')
         self.append('   | reguligilo --all --quote \\')
         self.append('   | pyspm-encode --model-file $BPEMODEL \\')
-        self.append('   | trunki -n {} -r -s ${{SGE_LOCALDIR}}/namedpipe -t ${{SGE_LOCALDIR}}/original.txt \\'.format(
-            self.get_max_length()))
+        self.append('   | trunki -n {} -r -s ${{SGE_LOCALDIR}}/namedpipe -t ${{SGE_LOCALDIR}}/indices.txt \\'.format(max_len))
         self.append('   | {} \\'.format(self.get_generation_command()))
         self.append('   | grep \'^H\' \\')
         self.append('   | cut -f 3 \\')
@@ -80,33 +75,31 @@ class RTTForeJobScript(RTTTranslateJobScript):
         self.append('   > ${SGE_LOCALDIR}/translated.txt')
 
     def make_outputs(self):
-        self.append('pigz -c ${{SGE_LOCALDIR}}/original.txt > {}'.format(self.get_outdir_path('original.gz')))
-        self.append('pigz -c ${{SGE_LOCALDIR}}/translated.txt > {}'.format(self.get_outdir_path('translated.gz')))
+        self.append('paste ${SGE_LOCALDIR}/indices.txt ${SGE_LOCALDIR}/translated.txt \\')
+        self.append('   | pigz -c \\')
+        self.append('   > {}'.format(self.get_outdir_path('fore.gz')))
 
 class RTTBackJobScript(RTTTranslateJobScript):
     phase = 'back'
 
-    def make_inputs(self):
-        self.append('zcat {} > ${{SGE_LOCALDIR}}/original.txt'.format(self.get_outdir_path('original.gz')))
-        self.append('zcat {} > ${{SGE_LOCALDIR}}/translated.txt'.format(self.get_outdir_path('translated.gz')))
-        self.append('')
-
     def make_translation(self):
-        self.append('paste ${SGE_LOCALDIR}/original.txt ${SGE_LOCALDIR}/translated.txt \\')
-        self.append('   | tee >(cut -f 1-2 > ${SGE_LOCALDIR}/namedpipe) \\')
-        self.append('   | cut -f 3 \\')
+        max_len = self.get_max_length()
+
+        self.append('zcat {} \\'.format(self.get_outdir_path('fore.gz')))
+        self.append('   | tee >(cut -f 1 > ${SGE_LOCALDIR}/namedpipe) \\')
+        self.append('   | cut -f 2 \\')
         self.append('   | pyspm-encode --model-file $BPEMODEL \\')
-        self.append('   | trunki -n {} -r -s ${{SGE_LOCALDIR}}/namedpipe -t ${{SGE_LOCALDIR}}/target.txt \\'.format(
-            self.get_max_length()))
+        self.append('   | trunki -n {} -r -s ${{SGE_LOCALDIR}}/namedpipe -t ${{SGE_LOCALDIR}}/indices.txt \\'.format(max_len))
         self.append('   | {} \\'.format(self.get_generation_command()))
         self.append('   | grep \'^H\' \\')
         self.append('   | cut -f 3 \\')
         self.append('   | pyspm-decode --replace-unk {} \\'.format(chr(0xfffd)))
         self.append('   | malreguligilo \\')
         self.append('   | progress \\')
-        self.append('   > ${SGE_LOCALDIR}/source.txt')
+        self.append('   > ${SGE_LOCALDIR}/translated.txt')
 
     def make_outputs(self):
-        self.append('pigz -c ${{SGE_LOCALDIR}}/target.txt > {}'.format(self.get_outdir_path('target.gz')))
-        self.append('pigz -c ${{SGE_LOCALDIR}}/source.txt > {}'.format(self.get_outdir_path('source.gz')))
+        self.append('paste ${SGE_LOCALDIR}/indices.txt ${SGE_LOCALDIR}/translated.txt \\')
+        self.append('   | pigz -c \\')
+        self.append('   > {}'.format(self.get_outdir_path('back.gz')))
 

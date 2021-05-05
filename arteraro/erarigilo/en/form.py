@@ -17,7 +17,7 @@ def form_src(sent):
             word_list.append((token.index + token.shift, token.cor, token.left_space, token.right_space))
     word_list.sort(key = lambda x : x[0])
 
-    # 削除された語は除く
+    # to remove delated tokens from word_list
     word_list = [(index, word, left_space, right_space)
             for index, word, left_space, right_space
             in word_list
@@ -45,8 +45,13 @@ def en_form():
         sent = sent.strip()
         sent = json.loads(sent)
         sent = EnSent.decode(sent, token_class = EnToken)
+
         src = form_src(sent)
-        trg = form_trg(sent)
+        if sent.trg is None:
+            trg = form_trg(sent)
+        else:
+            trg = sent.trg['text']
+
         out = src + '\t' + trg
         print(out)
 
