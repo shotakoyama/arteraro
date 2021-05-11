@@ -6,11 +6,15 @@ class Script(list):
         super().__init__()
         self.config = load_config()
         self.path = self.make_path()
+        self.prepare()
         self.header()
         self.make()
         self.footer()
         self.make_dir()
         self.save()
+
+    def prepare(self):
+        pass
 
     def header(self):
         self.append('#!/bin/bash')

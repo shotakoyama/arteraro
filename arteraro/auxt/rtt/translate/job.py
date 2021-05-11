@@ -66,6 +66,7 @@ class RTTForeJobScript(RTTTranslateJobScript):
         self.append('   | en-tokenize \\')
         self.append('   | reguligilo --all --quote \\')
         self.append('   | pyspm-encode --model-file $BPEMODEL \\')
+        self.append('   | cat \\') # unbuffering: if the number of input sentences is not so small, the buffer of input of trunki and that of input of named pipe may stuck
         self.append('   | trunki -n {} -r -s ${{SGE_LOCALDIR}}/namedpipe -t ${{SGE_LOCALDIR}}/indices.txt \\'.format(max_len))
         self.append('   | {} \\'.format(self.get_generation_command()))
         self.append('   | grep \'^H\' \\')
@@ -89,6 +90,7 @@ class RTTBackJobScript(RTTTranslateJobScript):
         self.append('   | tee >(cut -f 1 > ${SGE_LOCALDIR}/namedpipe) \\')
         self.append('   | cut -f 2 \\')
         self.append('   | pyspm-encode --model-file $BPEMODEL \\')
+        self.append('   | cat \\')
         self.append('   | trunki -n {} -r -s ${{SGE_LOCALDIR}}/namedpipe -t ${{SGE_LOCALDIR}}/indices.txt \\'.format(max_len))
         self.append('   | {} \\'.format(self.get_generation_command()))
         self.append('   | grep \'^H\' \\')

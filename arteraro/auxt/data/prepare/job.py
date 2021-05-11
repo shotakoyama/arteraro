@@ -28,13 +28,13 @@ class PrepareJobScript(DataJobScript):
         target_dropout = self.get_target_dropout_probability()
         return source_dropout, target_dropout
 
-    def make_spm_commands(self):
+    def make_spm_commands(self, parallel=True):
         src_dropout, trg_dropout = self.get_dropout_probabilities()
 
         src_spm = spm_command('${MODELPATH}', dropout = src_dropout)
         trg_spm = spm_command('${MODELPATH}', dropout = trg_dropout)
 
-        if 'threads' in self.config:
+        if parallel and 'threads' in self.config:
             j = self.get_threads()
             L = self.get_lines()
             src_spm = parallel_command(j, L, '"{}"'.format(src_spm))

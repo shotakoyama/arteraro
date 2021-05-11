@@ -15,8 +15,11 @@ class WorkerJobScript(JobScript):
     def make_path(self):
         return '{}/worker.sh'.format(self.index)
 
-    def p_copy(self):
+    def p_multi_node(self):
         return self.num_node > 1
+
+    def p_copy(self):
+        return self.config['train'].get('copy_data_bin', False)
 
     def make_data_bin_path(self, data_path, index):
         if self.p_copy():
@@ -75,13 +78,13 @@ class WorkerJobScript(JobScript):
         command.clip_norm(self.config['train'].get('clip_norm', 1.0))
         command.weight_decay(self.config['train'].get('weight_decay', 1.0e-03))
         command.label_smoothed_cross_entropy(self.config['train'].get('label_smoothing', 0.1))
-        if self.p_copy():
+        if self.p_multi_node():
             command.distributed(self.num_node, self.gpu_per_node, self.port)
         return command
 
     def make(self):
         data_indices = self.make_data_indices()
-        if self.config['train'].get('copy_data_bin', False):
+        if self.p_copy():
             self.make_copy(data_indices)
         command = self.make_train_command(data_indices)
         self.append(str(command))

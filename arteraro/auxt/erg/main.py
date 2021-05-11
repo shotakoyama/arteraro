@@ -90,7 +90,7 @@ class ErgJobScript(JobScript):
         self.append('   | tondi --min-len {} --max-len {} \\'.format(min_len, max_len))
         self.append('   | progress \\')
         self.append('   | pigz -c \\')
-        self.append('   > {}'.format(Path('{}/{}/train.gz'.format(self.trial, self.index))))
+        self.append('   > {}'.format(Path('{}/{}/train.gz'.format(self.trial, self.index)).resolve()))
 
 class ErgRunScript(RunScript):
     def make_path(self):
