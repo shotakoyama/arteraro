@@ -35,12 +35,12 @@ class WorkerJobScript(JobScript):
         return data_bins
 
     def make_copy(self, data_indices):
-        for index in range(len(data_indices)):
+        for index in data_indices:
             self.append('mkdir -p ${{SGE_LOCALDIR}}/{}'.format(index))
 
-        for n, index in enumerate(data_indices):
+        for index in data_indices:
             data_path = Path(self.config['data']).resolve() / str(index) / 'data-bin'
-            self.append('cp -r {} ${{SGE_LOCALDIR}}/{} &'.format(data_path, n))
+            self.append('cp -r {} ${{SGE_LOCALDIR}}/{} &'.format(data_path, index))
         self.append('wait')
 
     def make_data_indices(self):

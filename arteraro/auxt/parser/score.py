@@ -1,6 +1,12 @@
-from .gec import make_gec_dataset_arguments, add_gec_dataset_arguments
+from .gec import (
+        make_gec_dataset_arguments,
+        add_gec_dataset_arguments,
+        make_gec_dataset_arguments_without_bea19,
+        add_gec_dataset_arguments_without_bea19)
 from arteraro.auxt.expt.wmt import wmt_valid_score, wmt_test_score
-from arteraro.auxt.expt.score.gec import gec_valid_score
+from arteraro.auxt.expt.score.gec import (
+        gec_valid_score,
+        gec_test_score)
 
 def wmt_valid_score_command(args):
     wmt_valid_score()
@@ -12,6 +18,10 @@ def wmt_test_score_command(args):
 
 def gec_valid_score_command(args):
     gec_valid_score(*make_gec_dataset_arguments(args))
+
+
+def gec_test_score_command(args):
+    gec_test_score(*make_gec_dataset_arguments_without_bea19(args))
 
 
 def set_wmt_score(main_sub_parsers):
@@ -33,8 +43,9 @@ def set_gec_score(main_sub_parsers):
     add_gec_dataset_arguments(valid)
     valid.set_defaults(handler = gec_valid_score_command)
 
-    # test = sub_parsers.add_parser('test')
-    # test.set_defaults(handler = gec_test_score_command)
+    test = sub_parsers.add_parser('test')
+    add_gec_dataset_arguments_without_bea19(test)
+    test.set_defaults(handler = gec_test_score_command)
 
     # ensemble = sub_parsers.add_parser('ensemble')
     # ensemble.set_defaults(handler = gec_ensemble_score_command)

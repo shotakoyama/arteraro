@@ -11,3 +11,14 @@ def add_gec_dataset_arguments(parser):
     parser.add_argument('-f', '--fce', action = 'store_true')
     parser.add_argument('-j', '--jfleg', action = 'store_true')
 
+def make_gec_dataset_arguments_without_bea19(args):
+    conll = args.conll or not (args.fce or args.jfleg)
+    fce = args.fce or not (args.conll or args.jfleg)
+    jfleg = args.jfleg or not (args.conll or args.fce)
+    return conll, fce, jfleg
+
+def add_gec_dataset_arguments_without_bea19(parser):
+    parser.add_argument('-c', '--conll', action = 'store_true')
+    parser.add_argument('-f', '--fce', action = 'store_true')
+    parser.add_argument('-j', '--jfleg', action = 'store_true')
+

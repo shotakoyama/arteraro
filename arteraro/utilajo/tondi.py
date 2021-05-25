@@ -21,10 +21,15 @@ def main():
     parser.add_argument('--max-len', type=int, default = 400)
     args = parser.parse_args()
 
-    for line in sys.stdin:
-        line = line.rstrip('\n')
-        src, trg = line.split('\t')
-        if cond(args, src, trg):
-            line = '{}\t{}'.format(src, trg)
-            print(line)
+    try:
+        for line in sys.stdin:
+            line = line.rstrip('\n')
+            src, trg = line.split('\t')
+            if cond(args, src, trg):
+                line = '{}\t{}'.format(src, trg)
+                print(line)
+    except KeyboardInterrupt:
+        pass
+    except BrokenPipeError:
+        pass
 

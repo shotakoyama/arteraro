@@ -1,58 +1,15 @@
-from arteraro.auxt.expt.util import get_single_valid_outdir_list
-from arteraro.auxt.util.run import generate_run
 from .bea19 import (
-        BEA19ValidSingleGenerationJobScript,
-        BEA19ValidSingleGenerationRunScript,
-        BEA19ValidSingleGenerationSubScript)
+        bea19_valid_generation,
+        bea19_test_generation)
 from .conll import (
-        CoNLL13SingleGenerationJobScript,
-        CoNLL14SingleGenerationJobScript,
-        CoNLL13SingleGenerationRunScript,
-        CoNLL14SingleGenerationRunScript,
-        CoNLL13SingleGenerationSubScript,
-        CoNLL14SingleGenerationSubScript)
+        conll13_generation,
+        conll14_generation)
 from .fce import (
-        FCEValidSingleGenerationJobScript,
-        FCETestSingleGenerationJobScript,
-        FCEValidSingleGenerationRunScript,
-        FCETestSingleGenerationRunScript,
-        FCEValidSingleGenerationSubScript,
-        FCETestSingleGenerationSubScript)
+        fce_valid_generation,
+        fce_test_generation)
 from .jfleg import (
-        JFLEGValidSingleGenerationJobScript,
-        JFLEGTestSingleGenerationJobScript,
-        JFLEGValidSingleGenerationRunScript,
-        JFLEGTestSingleGenerationRunScript,
-        JFLEGValidSingleGenerationSubScript,
-        JFLEGTestSingleGenerationSubScript)
-
-def bea19_valid_generation():
-    script_list = [BEA19ValidSingleGenerationJobScript(outdir)
-            for outdir in get_single_valid_outdir_list('bea19', 'valid')]
-    generate_run(script_list,
-            BEA19ValidSingleGenerationRunScript,
-            BEA19ValidSingleGenerationSubScript)
-
-def conll13_generation():
-    script_list = [CoNLL13SingleGenerationJobScript(outdir)
-            for outdir in get_single_valid_outdir_list('conll', 'valid')]
-    generate_run(script_list,
-            CoNLL13SingleGenerationRunScript,
-            CoNLL13SingleGenerationSubScript)
-
-def fce_valid_generation():
-    script_list = [FCEValidSingleGenerationJobScript(outdir)
-            for outdir in get_single_valid_outdir_list('fce', 'valid')]
-    generate_run(script_list,
-            FCEValidSingleGenerationRunScript,
-            FCEValidSingleGenerationSubScript)
-
-def jfleg_valid_generation():
-    script_list = [JFLEGValidSingleGenerationJobScript(outdir)
-            for outdir in get_single_valid_outdir_list('jfleg', 'valid')]
-    generate_run(script_list,
-            JFLEGValidSingleGenerationRunScript,
-            JFLEGValidSingleGenerationSubScript)
+        jfleg_valid_generation,
+        jfleg_test_generation)
 
 def gec_valid_generation(bea19, conll, fce, jfleg):
     if bea19:
@@ -63,4 +20,14 @@ def gec_valid_generation(bea19, conll, fce, jfleg):
         fce_valid_generation()
     if jfleg:
         jfleg_valid_generation()
+
+def gec_test_generation(bea19, conll, fce, jfleg):
+    if bea19:
+        bea19_test_generation()
+    if conll:
+        conll14_generation()
+    if fce:
+        fce_test_generation()
+    if jfleg:
+        jfleg_test_generation()
 

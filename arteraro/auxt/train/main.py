@@ -11,8 +11,8 @@ def train():
     if check_sub_config():
         sub_config = load_sub_config()
         num_node = sub_config['train']['num_node']
-        gpu_per_node = sub_config['train']['gpu_per_node']
-        port = sub_config['train']['port']
+        gpu_per_node = sub_config['train'].get('gpu_per_node', None)
+        port = sub_config['train'].get('port', None)
     else:
         sub_config = None
         num_node = 1

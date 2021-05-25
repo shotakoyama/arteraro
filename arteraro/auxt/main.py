@@ -21,6 +21,7 @@ def main():
     set_train(sub_parsers)
     set_generation(sub_parsers)
     set_score(sub_parsers)
+    set_result(sub_parsers)
     set_split(sub_parsers)
     set_rtt(sub_parsers)
     set_tokenize(sub_parsers)
