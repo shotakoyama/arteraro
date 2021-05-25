@@ -1,11 +1,12 @@
 from .run import ScoreRunScript
 from .sub import ScoreSubScript
 from .gec_job import GECScoreJobScript, GECRerankingScoreJobScript
-from arteraro.auxt.expt.util import (
-        get_single_valid_outdir_list,
-        get_single_test_outdir_list)
-from arteraro.auxt.util.run import generate_run
-from arteraro.auxt.expt.result.errant import ErrantResultTable
+from arteraro.auxt.expt.result.errant import ErrantResultTableFactory
+from .util import (
+        valid_single_score,
+        test_single_score,
+        valid_ensemble_score,
+        test_ensemble_score)
 
 class ErrantScoreJobInterface:
     def make_environment_source_path(self):
@@ -27,6 +28,7 @@ class ErrantScoreJobInterface:
         self.append('errant_compare -ref {} -hyp {} -cat 3 > {}'.format(
             reference, output_path, self.outdir.make_path('result.cat3')))
 
+### BEA19 valid JOB
 class BEA19ValidScoreJobInterface(ErrantScoreJobInterface):
     def original_path(self):
         return self.eval_config['bea19']['valid_orig']
@@ -34,25 +36,24 @@ class BEA19ValidScoreJobInterface(ErrantScoreJobInterface):
     def reference_path(self):
         return self.eval_config['bea19']['valid_m2']
 
+class BEA19ValidScoreJobScript(
+        BEA19ValidScoreJobInterface,
+        GECScoreJobScript):
+    pass
+
+class BEA19ValidRerankingScoreJobScript(
+        BEA19ValidScoreJobInterface,
+        GECRerankingScoreJobScript):
+    pass
+
+
+### FCE valid JOB
 class FCEValidScoreJobInterface(ErrantScoreJobInterface):
     def original_path(self):
         return self.eval_config['fce']['valid_orig']
 
     def reference_path(self):
         return self.eval_config['fce']['valid_m2']
-
-class FCETestScoreJobInterface(ErrantScoreJobInterface):
-    def original_path(self):
-        return self.eval_config['fce']['test_orig']
-
-    def reference_path(self):
-        return self.eval_config['fce']['test_m2']
-
-class BEA19ValidScoreJobScript(BEA19ValidScoreJobInterface, GECScoreJobScript):
-    pass
-
-class BEA19ValidRerankingScoreJobScript(BEA19ValidScoreJobInterface, GECRerankingScoreJobScript):
-    pass
 
 class FCEValidScoreJobScript(
         FCEValidScoreJobInterface,
@@ -64,6 +65,15 @@ class FCEValidRerankingScoreJobScript(
         GECRerankingScoreJobScript):
     pass
 
+
+### FCE test JOB
+class FCETestScoreJobInterface(ErrantScoreJobInterface):
+    def original_path(self):
+        return self.eval_config['fce']['test_orig']
+
+    def reference_path(self):
+        return self.eval_config['fce']['test_m2']
+
 class FCETestScoreJobScript(
         FCETestScoreJobInterface,
         GECScoreJobScript):
@@ -74,30 +84,14 @@ class FCETestRerankingScoreJobScript(
         GECRerankingScoreJobScript):
     pass
 
+
+### BEA19 valid RUN/SUB
 class BEA19ValidSingleScorePathInterface:
     def make_path(self):
         return 'score_bea19_valid.sh'
 
-class FCEValidSingleScorePathInterface:
-    def make_path(self):
-        return 'score_fce_valid.sh'
-
-class FCETestSingleScorePathInterface:
-    def make_path(self):
-        return 'score_fce_test.sh'
-
 class BEA19ValidSingleScoreRunScript(
         BEA19ValidSingleScorePathInterface,
-        ScoreRunScript):
-    pass
-
-class FCEValidSingleScoreRunScript(
-        FCEValidSingleScorePathInterface,
-        ScoreRunScript):
-    pass
-
-class FCETestSingleScoreRunScript(
-        FCETestSingleScorePathInterface,
         ScoreRunScript):
     pass
 
@@ -106,9 +100,59 @@ class BEA19ValidSingleScoreSubScript(
         ScoreSubScript):
     pass
 
+class BEA19ValidEnsembleScorePathInterface:
+    def make_path(self):
+        return 'score_bea19_valid_ensemble.sh'
+
+class BEA19ValidEnsembleScoreRunScript(
+        BEA19ValidEnsembleScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class BEA19ValidEnsembleScoreSubScript(
+        BEA19ValidEnsembleScorePathInterface,
+        ScoreSubScript):
+    pass
+
+
+### FCE valid RUN/SUB
+class FCEValidSingleScorePathInterface:
+    def make_path(self):
+        return 'score_fce_valid.sh'
+
+class FCEValidSingleScoreRunScript(
+        FCEValidSingleScorePathInterface,
+        ScoreRunScript):
+    pass
+
 class FCEValidSingleScoreSubScript(
         FCEValidSingleScorePathInterface,
         ScoreSubScript):
+    pass
+
+class FCEValidEnsembleScorePathInterface:
+    def make_path(self):
+        return 'score_fce_valid_ensemble.sh'
+
+class FCEValidEnsembleScoreRunScript(
+        FCEValidEnsembleScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class FCEValidEnsembleScoreSubScript(
+        FCEValidEnsembleScorePathInterface,
+        ScoreSubScript):
+    pass
+
+
+### FCE test RUN/SUB
+class FCETestSingleScorePathInterface:
+    def make_path(self):
+        return 'score_fce_test.sh'
+
+class FCETestSingleScoreRunScript(
+        FCETestSingleScorePathInterface,
+        ScoreRunScript):
     pass
 
 class FCETestSingleScoreSubScript(
@@ -116,28 +160,58 @@ class FCETestSingleScoreSubScript(
         ScoreSubScript):
     pass
 
-def bea19_valid_score():
-    outdir_list = get_single_valid_outdir_list('bea19')
-    script_list = [BEA19ValidScoreJobScript(outdir)
-            for outdir in outdir_list]
-    generate_run(script_list,
+class FCETestEnsembleScorePathInterface:
+    def make_path(self):
+        return 'score_fce_test_ensemble.sh'
+
+class FCETestEnsembleScoreRunScript(
+        FCETestEnsembleScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class FCETestEnsembleScoreSubScript(
+        FCETestEnsembleScorePathInterface,
+        ScoreSubScript):
+    pass
+
+### score commands
+def bea19_valid_single_score():
+    valid_single_score('bea19',
+            BEA19ValidScoreJobScript,
             BEA19ValidSingleScoreRunScript,
             BEA19ValidSingleScoreSubScript)
 
-def fce_valid_score():
-    outdir_list = get_single_valid_outdir_list('fce')
-    script_list = [FCEValidScoreJobScript(outdir)
-            for outdir in outdir_list]
-    generate_run(script_list,
+def fce_valid_single_score():
+    valid_single_score('fce',
+            FCEValidScoreJobScript,
             FCEValidSingleScoreRunScript,
             FCEValidSingleScoreSubScript)
 
-def fce_test_score():
-    valid_result_table = ErrantResultTable('fce', 'valid')
-    outdir_list = get_single_test_outdir_list('fce', valid_result_table)
-    script_list = [FCETestScoreJobScript(outdir)
-            for outdir in outdir_list]
-    generate_run(script_list,
+def fce_test_single_score():
+    test_single_score('fce',
+            ErrantResultTableFactory,
+            FCETestScoreJobScript,
             FCETestSingleScoreRunScript,
             FCETestSingleScoreSubScript)
+
+def bea19_valid_ensemble_score():
+    valid_ensemble_score('bea19',
+            ErrantResultTableFactory,
+            BEA19ValidScoreJobScript,
+            BEA19ValidEnsembleScoreRunScript,
+            BEA19ValidEnsembleScoreSubScript)
+
+def fce_valid_ensemble_score():
+    valid_ensemble_score('fce',
+            ErrantResultTableFactory,
+            FCEValidScoreJobScript,
+            FCEValidEnsembleScoreRunScript,
+            FCEValidEnsembleScoreSubScript)
+
+def fce_test_ensemble_score():
+    test_ensemble_score('fce',
+            ErrantResultTableFactory,
+            FCETestScoreJobScript,
+            FCETestEnsembleScoreRunScript,
+            FCETestEnsembleScoreSubScript)
 

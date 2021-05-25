@@ -5,14 +5,14 @@ from tqdm import tqdm
 from argparse import ArgumentParser
 from sacremoses import MosesDetokenizer
 from nltk.tokenize.treebank import TreebankWordDetokenizer
-from transformers import RobertaTokenizer, RobertaForMaskedLM
+from transformers import AutoTokenizer, AutoModelForMaskedLM
 
 class MLMTokenizer:
     def __init__(self, name, detokenize):
         self.detokenize = detokenize
         if self.detokenize:
             self.md = MosesDetokenizer(lang='en')
-        self.tokenizer = RobertaTokenizer.from_pretrained(name)
+        self.tokenizer = AutoTokenizer.from_pretrained(name)
         self.pad_id = self.tokenizer.encoder['<pad>']
         self.mask_id = self.tokenizer.encoder['<mask>']
 
@@ -143,7 +143,7 @@ class BatchLoader(list):
 
 class MLMScorer:
     def __init__(self, arch):
-        self.model = RobertaForMaskedLM.from_pretrained(arch)
+        self.model = AutoModelForMaskedLM.from_pretrained(arch)
         self.model.eval()
         self.model.cuda()
         self.pad_id = MLMTokenizerSingleton.get().pad_id

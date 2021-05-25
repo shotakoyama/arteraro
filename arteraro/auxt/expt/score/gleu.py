@@ -1,11 +1,12 @@
 from .run import ScoreRunScript
 from .sub import ScoreSubScript
 from .gec_job import GECScoreJobScript, GECRerankingScoreJobScript
-from arteraro.auxt.expt.util import (
-        get_single_valid_outdir_list,
-        get_single_test_outdir_list)
-from arteraro.auxt.util.run import generate_run
-from arteraro.auxt.expt.result.gleu import GLEUResultTable
+from arteraro.auxt.expt.result.gleu import GLEUResultTableFactory
+from .util import (
+        valid_single_score,
+        test_single_score,
+        valid_ensemble_score,
+        test_ensemble_score)
 
 class GLEUScoreJobInterface:
     def make(self):
@@ -17,19 +18,13 @@ class GLEUScoreJobInterface:
             self.corrected_path(),
             self.outdir.make_path('result.txt')))
 
+### JFLEG valid JOB
 class JFLEGValidScoreJobInterface(GLEUScoreJobInterface):
     def original_path(self):
         return self.eval_config['jfleg']['valid_orig']
 
     def reference_path(self):
         return ' '.join(self.eval_config['jfleg']['valid_ref'])
-
-class JFLEGTestScoreJobInterface(GLEUScoreJobInterface):
-    def original_path(self):
-        return self.eval_config['jfleg']['test_orig']
-
-    def reference_path(self):
-        return ' '.join(self.eval_config['jfleg']['test_ref'])
 
 class JFLEGValidScoreJobScript(
         JFLEGValidScoreJobInterface,
@@ -41,6 +36,15 @@ class JFLEGValidRerankingScoreJobScript(
         GECRerankingScoreJobScript):
     pass
 
+
+### JFLEG test JOB
+class JFLEGTestScoreJobInterface(GLEUScoreJobInterface):
+    def original_path(self):
+        return self.eval_config['jfleg']['test_orig']
+
+    def reference_path(self):
+        return ' '.join(self.eval_config['jfleg']['test_ref'])
+
 class JFLEGTestScoreJobScript(
         JFLEGTestScoreJobInterface,
         GECScoreJobScript):
@@ -51,21 +55,14 @@ class JFLEGTestRerankingScoreJobScript(
         GECRerankingScoreJobScript):
     pass
 
+
+### JFLEG valid RUN/SUB
 class JFLEGValidSingleScorePathInterface:
     def make_path(self):
         return 'score_jfleg_valid.sh'
 
-class JFLEGTestSingleScorePathInterface:
-    def make_path(self):
-        return 'score_jfleg_test.sh'
-
 class JFLEGValidSingleScoreRunScript(
         JFLEGValidSingleScorePathInterface,
-        ScoreRunScript):
-    pass
-
-class JFLEGTestSingleScoreRunScript(
-        JFLEGTestSingleScorePathInterface,
         ScoreRunScript):
     pass
 
@@ -74,25 +71,76 @@ class JFLEGValidSingleScoreSubScript(
         ScoreSubScript):
     pass
 
+class JFLEGValidEnsembleScorePathInterface:
+    def make_path(self):
+        return 'score_jfleg_valid_ensemble.sh'
+
+class JFLEGValidEnsembleScoreRunScript(
+        JFLEGValidEnsembleScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class JFLEGValidEnsembleScoreSubScript(
+        JFLEGValidEnsembleScorePathInterface,
+        ScoreSubScript):
+    pass
+
+
+### JFLEG test RUN/SUB
+class JFLEGTestSingleScorePathInterface:
+    def make_path(self):
+        return 'score_jfleg_test.sh'
+
+class JFLEGTestSingleScoreRunScript(
+        JFLEGTestSingleScorePathInterface,
+        ScoreRunScript):
+    pass
+
 class JFLEGTestSingleScoreSubScript(
         JFLEGTestSingleScorePathInterface,
         ScoreSubScript):
     pass
 
-def jfleg_valid_score():
-    outdir_list = get_single_valid_outdir_list('jfleg')
-    script_list = [JFLEGValidScoreJobScript(outdir)
-            for outdir in outdir_list]
-    generate_run(script_list,
+class JFLEGTestEnsembleScorePathInterface:
+    def make_path(self):
+        return 'score_jfleg_test_ensemble.sh'
+
+class JFLEGTestEnsembleScoreRunScript(
+        JFLEGTestEnsembleScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class JFLEGTestEnsembleScoreSubScript(
+        JFLEGTestEnsembleScorePathInterface,
+        ScoreSubScript):
+    pass
+
+
+### score commands
+def jfleg_valid_single_score():
+    valid_single_score('jfleg',
+            JFLEGValidScoreJobScript,
             JFLEGValidSingleScoreRunScript,
             JFLEGValidSingleScoreSubScript)
 
-def jfleg_test_score():
-    valid_result_table = GLEUResultTable('jfleg', 'valid')
-    outdir_list = get_single_test_outdir_list('jfleg', valid_result_table)
-    script_list = [JFLEGTestScoreJobScript(outdir)
-            for outdir in outdir_list]
-    generate_run(script_list,
+def jfleg_test_single_score():
+    test_single_score('jfleg',
+            GLEUResultTableFactory,
+            JFLEGTestScoreJobScript,
             JFLEGTestSingleScoreRunScript,
             JFLEGTestSingleScoreSubScript)
+
+def jfleg_valid_ensemble_score():
+    valid_ensemble_score('jfleg',
+            GLEUResultTableFactory,
+            JFLEGValidScoreJobScript,
+            JFLEGValidEnsembleScoreRunScript,
+            JFLEGValidEnsembleScoreSubScript)
+
+def jfleg_test_ensemble_score():
+    test_ensemble_score('jfleg',
+            GLEUResultTableFactory,
+            JFLEGTestScoreJobScript,
+            JFLEGTestEnsembleScoreRunScript,
+            JFLEGTestEnsembleScoreSubScript)
 

@@ -1,14 +1,12 @@
 import numpy as np
-from arteraro.auxt.expt.outdir import SinglePhaseDir
 from .result import (
         Result,
         ResultList,
-        ResultTable)
+        ResultListFactory,
+        ResultTable,
+        ResultTableFactory)
 
 class GLEUResult(Result):
-    def get_result_path(self):
-        return self.outdir.make_path('result.txt')
-
     def init_attr(self, x):
         gleu = x[1].split(',')[0].replace("'", '').replace('[', '')
         self.gleu = float(gleu)
@@ -21,28 +19,38 @@ class GLEUResult(Result):
 
 
 class GLEUResultList(ResultList):
-    def make_result(self, epoch):
-        outdir = self.phasedir.make_outdir(epoch)
-        return GLEUResult(outdir)
+    def show_avg(self):
+        avg = np.mean([result.gleu for result in self])
+        line = 'average: {}'.format(avg)
+        return line
 
-    def show(self):
+    def show_maxmin(self):
         num_results = len(self)
         minimum = min(self)
         maximum = max(self)
-        lst = ['index {} ({}):'.format(self.phasedir.index, num_results),
-            'max {} ({}),'.format(maximum.gleu, maximum.outdir.epoch),
-            'min {} ({})'.format(minimum.gleu, minimum.outdir.epoch)]
-        line = '\t'.join(lst)
+        max_result = 'max {} ({})'.format(
+                maximum.gleu, maximum.outdir.epoch)
+        min_result = 'min {} ({})'.format(
+                minimum.gleu, minimum.outdir.epoch)
+        line = '{}\t{}'.format(max_result, min_result)
         return line
 
 
-class GLEUResultTable(ResultTable):
-    def make_result_list(self, index):
-        phasedir = SinglePhaseDir(index, self.dataset, self.phase)
-        return GLEUResultList(phasedir)
+class GLEUResultListFactory(ResultListFactory):
+    def init_result_list(self):
+        return GLEUResultList()
 
+    def make_result(self, outdir):
+        return GLEUResult(outdir)
+
+
+class GLEUResultTable(ResultTable):
     def show(self):
-        xs = [result_list.show() for result_list in self]
+        xs = ['index {} ({}): {}'.format(
+            max(result_list).outdir.index,
+            len(result_list),
+            result_list.show_maxmin())
+            for result_list in self]
 
         max_list = self.maximum_list()
         ave = np.mean([x.gleu for x in max_list])
@@ -50,4 +58,12 @@ class GLEUResultTable(ResultTable):
         xs.append(line)
 
         return '\n'.join(xs)
+
+
+class GLEUResultTableFactory(ResultTableFactory):
+    def init_result_table(self):
+        return GLEUResultTable()
+
+    def make_result_list_factory(self):
+        return GLEUResultListFactory()
 

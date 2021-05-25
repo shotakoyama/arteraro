@@ -5,6 +5,7 @@ from .parser.train import set_train
 from .parser.generation import set_generation
 from .parser.score import set_score
 from .parser.result import set_result
+from .parser.rerank import set_rerank
 from .parser.split import set_split
 from .parser.rtt import set_rtt
 from .parser.tokenize import set_tokenize
@@ -22,6 +23,7 @@ def main():
     set_generation(sub_parsers)
     set_score(sub_parsers)
     set_result(sub_parsers)
+    set_rerank(sub_parsers)
     set_split(sub_parsers)
     set_rtt(sub_parsers)
     set_tokenize(sub_parsers)

@@ -1,59 +1,99 @@
 from .run import GenerationRunScript
-from .sub import GenerationSubScript
-from .gec_job import GECSingleGenerationJobScript
+from .sub import (
+        GenerationSubScript,
+        EnsembleGenerationSubScript)
+from .gec_job import (
+        GECSingleGenerationJobScript,
+        GECEnsembleGenerationJobScript)
 from arteraro.auxt.expt.util import (
         get_single_valid_outdir_list,
-        get_single_test_outdir_list)
+        get_single_test_outdir_list,
+        get_ensemble_outdir)
 from arteraro.auxt.util.run import generate_run
-from arteraro.auxt.expt.result.gleu import GLEUResultTable
+from arteraro.auxt.expt.result.gleu import GLEUResultTableFactory
 
-class JFLEGValidSourceInterface:
+### JFLEG valid JOB
+class JFLEGValidInputInterface:
     def get_input_path(self):
         return self.eval_config['jfleg']['valid_src']
 
-class JFLEGTestSourceInterface:
+class JFLEGValidSingleGenerationJobScript(
+        JFLEGValidInputInterface,
+        GECSingleGenerationJobScript):
+    pass
+
+class JFLEGValidEnsembleGenerationJobScript(
+        JFLEGValidInputInterface,
+        GECEnsembleGenerationJobScript):
+    pass
+
+
+### JFLEG test JOB
+class JFLEGTestInputInterface:
     def get_input_path(self):
         return self.eval_config['jfleg']['test_src']
 
-class JFLEGValidSingleGenerationJobScript(
-        GECSingleGenerationJobScript,
-        JFLEGValidSourceInterface):
-    pass
-
 class JFLEGTestSingleGenerationJobScript(
-        GECSingleGenerationJobScript,
-        JFLEGTestSourceInterface):
+        JFLEGTestInputInterface,
+        GECSingleGenerationJobScript):
     pass
 
+class JFLEGTestEnsembleGenerationJobScript(
+        JFLEGTestInputInterface,
+        GECEnsembleGenerationJobScript):
+    pass
+
+
+### JFLEG valid RUN/SUB
 class JFLEGValidSingleGenerationPathInterface:
     def make_path(self):
         return 'generate_jfleg_valid.sh'
 
+class JFLEGValidSingleGenerationRunScript(
+        JFLEGValidSingleGenerationPathInterface,
+        GenerationRunScript):
+    pass
+
+class JFLEGValidSingleGenerationSubScript(
+        JFLEGValidSingleGenerationPathInterface,
+        GenerationSubScript):
+    pass
+
+
+### JFLEG test RUN/SUB
 class JFLEGTestSingleGenerationPathInterface:
     def make_path(self):
         return 'generate_jfleg_test.sh'
 
-class JFLEGValidSingleGenerationRunScript(
-        GenerationRunScript,
-        JFLEGValidSingleGenerationPathInterface):
-    pass
-
-class JFLEGValidSingleGenerationSubScript(
-        GenerationSubScript,
-        JFLEGValidSingleGenerationPathInterface):
-    pass
-
 class JFLEGTestSingleGenerationRunScript(
-        GenerationRunScript,
-        JFLEGTestSingleGenerationPathInterface):
+        JFLEGTestSingleGenerationPathInterface,
+        GenerationRunScript):
     pass
 
 class JFLEGTestSingleGenerationSubScript(
-        GenerationSubScript,
-        JFLEGTestSingleGenerationPathInterface):
+        JFLEGTestSingleGenerationPathInterface,
+        GenerationSubScript):
     pass
 
-def jfleg_valid_generation():
+
+### JFLEG ensemble RUN/SUB
+class JFLEGEnsembleGenerationPathInterface:
+    def make_path(self):
+        return 'generate_jfleg_ensemble.sh'
+
+class JFLEGEnsembleGenerationRunScript(
+        JFLEGEnsembleGenerationPathInterface,
+        GenerationRunScript):
+    pass
+
+class JFLEGEnsembleGenerationSubScript(
+        JFLEGEnsembleGenerationPathInterface,
+        EnsembleGenerationSubScript):
+    pass
+
+
+### JFLEG generation command
+def jfleg_valid_single_generation():
     outdir_list = get_single_valid_outdir_list('jfleg')
     script_list = [JFLEGValidSingleGenerationJobScript(outdir)
             for outdir in outdir_list]
@@ -61,12 +101,23 @@ def jfleg_valid_generation():
             JFLEGValidSingleGenerationRunScript,
             JFLEGValidSingleGenerationSubScript)
 
-def jfleg_test_generation():
-    valid_result_table = GLEUResultTable('jfleg', 'valid')
+def jfleg_test_single_generation():
+    valid_result_table = GLEUResultTableFactory().make('jfleg', 'valid')
     outdir_list = get_single_test_outdir_list('jfleg', valid_result_table)
     script_list = [JFLEGTestSingleGenerationJobScript(outdir)
             for outdir in outdir_list]
     generate_run(script_list,
             JFLEGTestSingleGenerationRunScript,
             JFLEGTestSingleGenerationSubScript)
+
+def jfleg_ensemble_generation():
+    valid_result_table = GLEUResultTableFactory().make('jfleg', 'valid')
+    valid_outdir = get_ensemble_outdir('jfleg', 'valid', valid_result_table)
+    test_outdir = get_ensemble_outdir('jfleg', 'test', valid_result_table)
+    script_list = [
+            JFLEGValidEnsembleGenerationJobScript(valid_outdir),
+            JFLEGTestEnsembleGenerationJobScript(test_outdir)]
+    generate_run(script_list,
+            JFLEGEnsembleGenerationRunScript,
+            JFLEGEnsembleGenerationSubScript)
 

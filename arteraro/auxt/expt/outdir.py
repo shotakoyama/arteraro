@@ -48,8 +48,18 @@ class EnsembleOutDir(PhaseOutDir):
         return ':'.join(checkpoint_path_list)
 
     def make_outdir_path(self):
-        path = 'ensemble/{}/{}/{}'.format(self.dataset,
-                self.phase, self.epoch)
+        path = 'ensemble/{}/{}'.format(self.dataset, self.phase)
+        return Path(path)
+
+
+class EnsembleRerankingOutDir(PhaseOutDir):
+    def __init__(self, dataset, phase, arch):
+        self.arch = arch
+        super().__init__(dataset, phase)
+
+    def make_outdir_path(self):
+        path = 'ensemble/{}/{}/{}'.format(
+                self.dataset, self.phase, self.arch)
         return Path(path)
 
 
