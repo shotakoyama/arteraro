@@ -4,6 +4,16 @@ from .job import RerankingJobScript
 from .util import get_arch_list
 from arteraro.auxt.util.run import generate_run
 from arteraro.auxt.expt.util import get_ensemble_reranking_outdir
+from arteraro.auxt.expt.score.errant import (
+        bea19_valid_ensemble_reranked_score,
+        fce_valid_ensemble_reranked_score,
+        fce_test_ensemble_reranked_score)
+from arteraro.auxt.expt.score.m2 import (
+        conll13_ensemble_reranked_score,
+        conll14_ensemble_reranked_score)
+from arteraro.auxt.expt.score.gleu import (
+        jfleg_valid_ensemble_reranked_score,
+        jfleg_test_ensemble_reranked_score)
 
 class BEA19ValidEnsembleRerankingPathInterface:
     def make_path(self):
@@ -119,7 +129,8 @@ class JFLEGTestEnsembleRerankingSubScript(
 
 def ensemble_reranking(dataset, phase, run_script_class, sub_script_class):
     arch_list = get_arch_list()
-    outdir_list = [get_ensemble_reranking_outdir(dataset, phase, arch) for arch in arch_list]
+    outdir_list = [get_ensemble_reranking_outdir(dataset, phase, arch)
+            for arch in arch_list]
     script_list = [RerankingJobScript(outdir) for outdir in outdir_list]
     generate_run(script_list, run_script_class, sub_script_class)
 
@@ -167,13 +178,20 @@ def gec_ensemble_reranking(bea19, conll, fce, jfleg):
     if bea19:
         bea19_valid_ensemble_reranking()
         bea19_test_ensemble_reranking()
+        bea19_valid_ensemble_reranked_score()
     if conll:
         conll_valid_ensemble_reranking()
         conll_test_ensemble_reranking()
+        conll13_ensemble_reranked_score()
+        conll14_ensemble_reranked_score()
     if fce:
         fce_valid_ensemble_reranking()
         fce_test_ensemble_reranking()
+        fce_valid_ensemble_reranked_score()
+        fce_test_ensemble_reranked_score()
     if jfleg:
         jfleg_valid_ensemble_reranking()
         jfleg_test_ensemble_reranking()
+        jfleg_valid_ensemble_reranked_score()
+        jfleg_test_ensemble_reranked_score()
 

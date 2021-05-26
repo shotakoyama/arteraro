@@ -6,7 +6,8 @@ from .util import (
         valid_single_score,
         test_single_score,
         valid_ensemble_score,
-        test_ensemble_score)
+        test_ensemble_score,
+        ensemble_reranked_score)
 
 class GLEUScoreJobInterface:
     def make(self):
@@ -85,6 +86,20 @@ class JFLEGValidEnsembleScoreSubScript(
         ScoreSubScript):
     pass
 
+class JFLEGValidEnsembleRerankedScorePathInterface:
+    def make_path(self):
+        return 'score_reranked_jfleg_valid_ensemble.sh'
+
+class JFLEGValidEnsembleRerankedScoreRunScript(
+        JFLEGValidEnsembleRerankedScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class JFLEGValidEnsembleRerankedScoreSubScript(
+        JFLEGValidEnsembleRerankedScorePathInterface,
+        ScoreSubScript):
+    pass
+
 
 ### JFLEG test RUN/SUB
 class JFLEGTestSingleScorePathInterface:
@@ -112,6 +127,20 @@ class JFLEGTestEnsembleScoreRunScript(
 
 class JFLEGTestEnsembleScoreSubScript(
         JFLEGTestEnsembleScorePathInterface,
+        ScoreSubScript):
+    pass
+
+class JFLEGTestEnsembleRerankedScorePathInterface:
+    def make_path(self):
+        return 'score_reranked_jfleg_test_ensemble.sh'
+
+class JFLEGTestEnsembleRerankedScoreRunScript(
+        JFLEGTestEnsembleRerankedScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class JFLEGTestEnsembleRerankedScoreSubScript(
+        JFLEGTestEnsembleRerankedScorePathInterface,
         ScoreSubScript):
     pass
 
@@ -143,4 +172,16 @@ def jfleg_test_ensemble_score():
             JFLEGTestScoreJobScript,
             JFLEGTestEnsembleScoreRunScript,
             JFLEGTestEnsembleScoreSubScript)
+
+def jfleg_valid_ensemble_reranked_score():
+    ensemble_reranked_score('jfleg', 'valid',
+            JFLEGValidRerankingScoreJobScript,
+            JFLEGValidEnsembleRerankedScoreRunScript,
+            JFLEGValidEnsembleRerankedScoreSubScript)
+
+def jfleg_test_ensemble_reranked_score():
+    ensemble_reranked_score('jfleg', 'test',
+            JFLEGTestRerankingScoreJobScript,
+            JFLEGTestEnsembleRerankedScoreRunScript,
+            JFLEGTestEnsembleRerankedScoreSubScript)
 

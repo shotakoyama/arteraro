@@ -16,3 +16,7 @@ class GECRerankingScoreJobScript(GECScoreJobScript):
         lmil = int(self.l * 1000)
         return self.outdir.make_path('best.{}.txt'.format(lmil))
 
+    def make_path(self):
+        lmil = int(self.l * 1000)
+        return self.outdir.make_path('score.{}.sh'.format(lmil))
+

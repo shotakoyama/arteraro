@@ -8,3 +8,7 @@ def get_arch_list():
         arch_list = ['roberta_large']
     return arch_list
 
+def get_lambda_list():
+    config = load_config()
+    return config['rerank']['lambda']
+

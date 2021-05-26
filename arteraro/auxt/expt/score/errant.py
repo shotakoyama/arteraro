@@ -6,7 +6,8 @@ from .util import (
         valid_single_score,
         test_single_score,
         valid_ensemble_score,
-        test_ensemble_score)
+        test_ensemble_score,
+        ensemble_reranked_score)
 
 class ErrantScoreJobInterface:
     def make_environment_source_path(self):
@@ -114,6 +115,20 @@ class BEA19ValidEnsembleScoreSubScript(
         ScoreSubScript):
     pass
 
+class BEA19ValidEnsembleRerankedScorePathInterface:
+    def make_path(self):
+        return 'score_reranked_bea19_valid_ensemble.sh'
+
+class BEA19ValidEnsembleRerankedScoreRunScript(
+        BEA19ValidEnsembleRerankedScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class BEA19ValidEnsembleRerankedScoreSubScript(
+        BEA19ValidEnsembleRerankedScorePathInterface,
+        ScoreSubScript):
+    pass
+
 
 ### FCE valid RUN/SUB
 class FCEValidSingleScorePathInterface:
@@ -141,6 +156,20 @@ class FCEValidEnsembleScoreRunScript(
 
 class FCEValidEnsembleScoreSubScript(
         FCEValidEnsembleScorePathInterface,
+        ScoreSubScript):
+    pass
+
+class FCEValidEnsembleRerankedScorePathInterface:
+    def make_path(self):
+        return 'score_reranked_fce_valid_ensemble.sh'
+
+class FCEValidEnsembleRerankedScoreRunScript(
+        FCEValidEnsembleRerankedScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class FCEValidEnsembleRerankedScoreSubScript(
+        FCEValidEnsembleRerankedScorePathInterface,
         ScoreSubScript):
     pass
 
@@ -173,6 +202,21 @@ class FCETestEnsembleScoreSubScript(
         FCETestEnsembleScorePathInterface,
         ScoreSubScript):
     pass
+
+class FCETestEnsembleRerankedScorePathInterface:
+    def make_path(self):
+        return 'score_reranked_fce_test_ensemble.sh'
+
+class FCETestEnsembleRerankedScoreRunScript(
+        FCETestEnsembleRerankedScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class FCETestEnsembleRerankedScoreSubScript(
+        FCETestEnsembleRerankedScorePathInterface,
+        ScoreSubScript):
+    pass
+
 
 ### score commands
 def bea19_valid_single_score():
@@ -214,4 +258,22 @@ def fce_test_ensemble_score():
             FCETestScoreJobScript,
             FCETestEnsembleScoreRunScript,
             FCETestEnsembleScoreSubScript)
+
+def bea19_valid_ensemble_reranked_score():
+    ensemble_reranked_score('bea19', 'valid',
+            BEA19ValidRerankingScoreJobScript,
+            BEA19ValidEnsembleRerankedScoreRunScript,
+            BEA19ValidEnsembleRerankedScoreSubScript)
+
+def fce_valid_ensemble_reranked_score():
+    ensemble_reranked_score('fce', 'valid',
+            FCEValidRerankingScoreJobScript,
+            FCEValidEnsembleRerankedScoreRunScript,
+            FCEValidEnsembleRerankedScoreSubScript)
+
+def fce_test_ensemble_reranked_score():
+    ensemble_reranked_score('fce', 'test',
+            FCETestRerankingScoreJobScript,
+            FCETestEnsembleRerankedScoreRunScript,
+            FCETestEnsembleRerankedScoreSubScript)
 

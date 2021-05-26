@@ -27,7 +27,7 @@ class RerankingJobScript(ExptJobScript):
 
         for l in self.config['rerank']['lambda']:
             lmil = int(l * 1000)
-            self.append('mlm-reranking -l {} < {} | select_best > {} &'.format(
+            self.append('mlm-reranking -l {} < {} | select-best > {} &'.format(
                 l, output_path,
                 self.outdir.make_path('best.{}.txt'.format(lmil))))
         self.append('wait')

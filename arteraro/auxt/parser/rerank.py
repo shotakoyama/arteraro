@@ -17,7 +17,7 @@ def set_gec_reranking(main_sub_parsers):
 
 
 def set_rerank(main_sub_parsers):
-    parser = main_sub_parsers.add_parser('reranking')
+    parser = main_sub_parsers.add_parser('rerank')
     sub_parsers = parser.add_subparsers()
 
     set_gec_reranking(sub_parsers)

@@ -6,7 +6,8 @@ from .util import (
         valid_single_score,
         test_single_score,
         valid_ensemble_score,
-        test_ensemble_score)
+        test_ensemble_score,
+        ensemble_reranked_score)
 
 class M2ScoreJobInterface:
     def make(self):
@@ -78,6 +79,20 @@ class CoNLL13EnsembleScoreSubScript(
         ScoreSubScript):
     pass
 
+class CoNLL13EnsembleRerankedScorePathInterface:
+    def make_path(self):
+        return 'score_reranked_conll_valid_ensemble.sh'
+
+class CoNLL13EnsembleRerankedScoreRunScript(
+        CoNLL13EnsembleRerankedScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class CoNLL13EnsembleRerankedScoreSubScript(
+        CoNLL13EnsembleRerankedScorePathInterface,
+        ScoreSubScript):
+    pass
+
 
 ### CoNLL 14 (test) RUN/SUB
 class CoNLL14SingleScorePathInterface:
@@ -105,6 +120,20 @@ class CoNLL14EnsembleScoreRunScript(
 
 class CoNLL14EnsembleScoreSubScript(
         CoNLL14EnsembleScorePathInterface,
+        ScoreSubScript):
+    pass
+
+class CoNLL14EnsembleRerankedScorePathInterface:
+    def make_path(self):
+        return 'score_reranked_conll_test_ensemble.sh'
+
+class CoNLL14EnsembleRerankedScoreRunScript(
+        CoNLL14EnsembleRerankedScorePathInterface,
+        ScoreRunScript):
+    pass
+
+class CoNLL14EnsembleRerankedScoreSubScript(
+        CoNLL14EnsembleRerankedScorePathInterface,
         ScoreSubScript):
     pass
 
@@ -136,4 +165,16 @@ def conll14_ensemble_score():
             CoNLL14ScoreJobScript,
             CoNLL14EnsembleScoreRunScript,
             CoNLL14EnsembleScoreSubScript)
+
+def conll13_ensemble_reranked_score():
+    ensemble_reranked_score('conll', 'valid',
+            CoNLL13RerankingScoreJobScript,
+            CoNLL13EnsembleRerankedScoreRunScript,
+            CoNLL13EnsembleRerankedScoreSubScript)
+
+def conll14_ensemble_reranked_score():
+    ensemble_reranked_score('conll', 'test',
+            CoNLL14RerankingScoreJobScript,
+            CoNLL14EnsembleRerankedScoreRunScript,
+            CoNLL14EnsembleRerankedScoreSubScript)
 

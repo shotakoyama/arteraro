@@ -13,8 +13,8 @@ class MLMTokenizer:
         if self.detokenize:
             self.md = MosesDetokenizer(lang='en')
         self.tokenizer = AutoTokenizer.from_pretrained(name)
-        self.pad_id = self.tokenizer.encoder['<pad>']
-        self.mask_id = self.tokenizer.encoder['<mask>']
+        self.pad_id = self.tokenizer.vocab[self.tokenizer.pad_token]
+        self.mask_id = self.tokenizer.vocab[self.tokenizer.mask_token]
 
     def detokenizer(self, x):
         x = x.strip()
@@ -55,7 +55,7 @@ class GeneratedSentence:
         self.score = sent['score']
         tokenizer = MLMTokenizerSingleton.get()
         if tokenizer.detokenize:
-            self.detokenized_text = MLMTokenizerSingleton.get(self.text)
+            self.detokenized_text = tokenizer.detokenizer(self.text)
             self.encoded_tokens = tokenizer.encode(self.detokenized_text)
         else:
             self.detokenized_text = None
