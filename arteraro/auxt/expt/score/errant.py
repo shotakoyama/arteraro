@@ -13,24 +13,45 @@ class ErrantScoreJobInterface:
     def make_environment_source_path(self):
         return self.eval_config['errant_source_path']
 
+    def make_output_name(self):
+        output_name = 'best.m2'
+        result_name = 'result.txt'
+        cat1_name = 'result.cat1'
+        cat2_name = 'result.cat2'
+        cat3_name = 'result.cat3'
+        return output_name, result_name, cat1_name, cat2_name, cat3_name
+
     def make(self):
-        output_path = self.outdir.make_path('best.m2')
+        output_name, result_name, cat1_name, cat2_name, cat3_name = self.make_output_name()
+        output_path = self.outdir.make_path(output_name)
+        result_path = self.outdir.make_path(result_name)
+        cat1_path = self.outdir.make_path(cat1_name)
+        cat2_path = self.outdir.make_path(cat2_name)
+        cat3_path = self.outdir.make_path(cat3_name)
         self.append('errant_parallel -orig {} -cor {} -out {}'.format(
-            self.original_path(),
-            self.corrected_path(),
-            output_path))
+            self.original_path(), self.corrected_path(), output_path))
         reference = self.reference_path()
         self.append('errant_compare -ref {} -hyp {} > {}'.format(
-            reference, output_path, self.outdir.make_path('result.txt')))
+            reference, output_path, result_path))
         self.append('errant_compare -ref {} -hyp {} -cat 1 > {}'.format(
-            reference, output_path, self.outdir.make_path('result.cat1')))
+            reference, output_path, cat1_path))
         self.append('errant_compare -ref {} -hyp {} -cat 2 > {}'.format(
-            reference, output_path, self.outdir.make_path('result.cat2')))
+            reference, output_path, cat2_path))
         self.append('errant_compare -ref {} -hyp {} -cat 3 > {}'.format(
-            reference, output_path, self.outdir.make_path('result.cat3')))
+            reference, output_path, cat3_path))
+
+class ErrantRerankingScoreJobInterface(ErrantScoreJobInterface):
+    def make_output_name(self):
+        output_name = 'best.{}.m2'.format(self.lmil)
+        result_name = 'result.{}.txt'.format(self.lmil)
+        cat1_name = 'result.{}.cat1'.format(self.lmil)
+        cat2_name = 'result.{}.cat2'.format(self.lmil)
+        cat3_name = 'result.{}.cat3'.format(self.lmil)
+        return output_name, result_name, cat1_name, cat2_name, cat3_name
+
 
 ### BEA19 valid JOB
-class BEA19ValidScoreJobInterface(ErrantScoreJobInterface):
+class BEA19ValidScorePathInterface:
     def original_path(self):
         return self.eval_config['bea19']['valid_orig']
 
@@ -38,18 +59,20 @@ class BEA19ValidScoreJobInterface(ErrantScoreJobInterface):
         return self.eval_config['bea19']['valid_m2']
 
 class BEA19ValidScoreJobScript(
-        BEA19ValidScoreJobInterface,
+        ErrantScoreJobInterface,
+        BEA19ValidScorePathInterface,
         GECScoreJobScript):
     pass
 
 class BEA19ValidRerankingScoreJobScript(
-        BEA19ValidScoreJobInterface,
+        ErrantRerankingScoreJobInterface,
+        BEA19ValidScorePathInterface,
         GECRerankingScoreJobScript):
     pass
 
 
 ### FCE valid JOB
-class FCEValidScoreJobInterface(ErrantScoreJobInterface):
+class FCEValidScorePathInterface:
     def original_path(self):
         return self.eval_config['fce']['valid_orig']
 
@@ -57,18 +80,20 @@ class FCEValidScoreJobInterface(ErrantScoreJobInterface):
         return self.eval_config['fce']['valid_m2']
 
 class FCEValidScoreJobScript(
-        FCEValidScoreJobInterface,
+        ErrantScoreJobInterface,
+        FCEValidScorePathInterface,
         GECScoreJobScript):
     pass
 
 class FCEValidRerankingScoreJobScript(
-        FCEValidScoreJobInterface,
+        ErrantRerankingScoreJobInterface,
+        FCEValidScorePathInterface,
         GECRerankingScoreJobScript):
     pass
 
 
 ### FCE test JOB
-class FCETestScoreJobInterface(ErrantScoreJobInterface):
+class FCETestScorePathInterface:
     def original_path(self):
         return self.eval_config['fce']['test_orig']
 
@@ -76,12 +101,14 @@ class FCETestScoreJobInterface(ErrantScoreJobInterface):
         return self.eval_config['fce']['test_m2']
 
 class FCETestScoreJobScript(
-        FCETestScoreJobInterface,
+        ErrantScoreJobInterface,
+        FCETestScorePathInterface,
         GECScoreJobScript):
     pass
 
 class FCETestRerankingScoreJobScript(
-        FCETestScoreJobInterface,
+        ErrantRerankingScoreJobInterface,
+        FCETestScorePathInterface,
         GECRerankingScoreJobScript):
     pass
 

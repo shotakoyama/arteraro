@@ -10,17 +10,26 @@ from .util import (
         ensemble_reranked_score)
 
 class GLEUScoreJobInterface:
+    def make_output_name(self):
+        return 'result.txt'
+
     def make(self):
         scorer_path = self.eval_config['jfleg']['gleu_scorer']
+        output_name = self.make_output_name()
         self.append('python {} -r {} -s {} --hyp {} > {}'.format(
             scorer_path,
             self.reference_path(),
             self.original_path(),
             self.corrected_path(),
-            self.outdir.make_path('result.txt')))
+            self.outdir.make_path(output_name)))
+
+class GLEURerankingScoreJobInterface(GLEUScoreJobInterface):
+    def make_output_name(self):
+        return 'result.{}.txt'.format(self.lmil)
+
 
 ### JFLEG valid JOB
-class JFLEGValidScoreJobInterface(GLEUScoreJobInterface):
+class JFLEGValidScorePathInterface:
     def original_path(self):
         return self.eval_config['jfleg']['valid_orig']
 
@@ -28,18 +37,20 @@ class JFLEGValidScoreJobInterface(GLEUScoreJobInterface):
         return ' '.join(self.eval_config['jfleg']['valid_ref'])
 
 class JFLEGValidScoreJobScript(
-        JFLEGValidScoreJobInterface,
+        GLEUScoreJobInterface,
+        JFLEGValidScorePathInterface,
         GECScoreJobScript):
     pass
 
 class JFLEGValidRerankingScoreJobScript(
-        JFLEGValidScoreJobInterface,
+        GLEURerankingScoreJobInterface,
+        JFLEGValidScorePathInterface,
         GECRerankingScoreJobScript):
     pass
 
 
 ### JFLEG test JOB
-class JFLEGTestScoreJobInterface(GLEUScoreJobInterface):
+class JFLEGTestScorePathInterface:
     def original_path(self):
         return self.eval_config['jfleg']['test_orig']
 
@@ -47,12 +58,14 @@ class JFLEGTestScoreJobInterface(GLEUScoreJobInterface):
         return ' '.join(self.eval_config['jfleg']['test_ref'])
 
 class JFLEGTestScoreJobScript(
-        JFLEGTestScoreJobInterface,
+        GLEUScoreJobInterface,
+        JFLEGTestScorePathInterface,
         GECScoreJobScript):
     pass
 
 class JFLEGTestRerankingScoreJobScript(
-        JFLEGTestScoreJobInterface,
+        GLEURerankingScoreJobInterface,
+        JFLEGTestScorePathInterface,
         GECRerankingScoreJobScript):
     pass
 

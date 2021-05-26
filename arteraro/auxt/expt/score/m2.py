@@ -10,42 +10,55 @@ from .util import (
         ensemble_reranked_score)
 
 class M2ScoreJobInterface:
+    def make_output_name(self):
+        return 'result.txt'
+
     def make(self):
         scorer_path = self.eval_config['conll']['m2_scorer']
+        output_name = self.make_output_name()
         self.append('{} {} {} > {}'.format(
             scorer_path,
             self.corrected_path(),
             self.reference_path(),
-            self.outdir.make_path('result.txt')))
+            self.outdir.make_path(output_name)))
+
+class M2RerankingScoreJobInterface(M2ScoreJobInterface):
+    def make_output_name(self):
+        return 'result.{}.txt'.format(self.lmil)
+
 
 ### CoNLL 13 (valid) JOB
-class CoNLL13ScoreJobInterface(M2ScoreJobInterface):
+class CoNLL13ScorePathInterface:
     def reference_path(self):
         return self.eval_config['conll']['valid_m2']
 
 class CoNLL13ScoreJobScript(
-        CoNLL13ScoreJobInterface,
+        M2ScoreJobInterface,
+        CoNLL13ScorePathInterface,
         GECScoreJobScript):
     pass
 
 class CoNLL13RerankingScoreJobScript(
-        CoNLL13ScoreJobInterface,
+        M2RerankingScoreJobInterface,
+        CoNLL13ScorePathInterface,
         GECRerankingScoreJobScript):
     pass
 
 
 # CoNLL 14 (test) JOB
-class CoNLL14ScoreJobInterface(M2ScoreJobInterface):
+class CoNLL14ScorePathInterface:
     def reference_path(self):
         return self.eval_config['conll']['test_m2']
 
 class CoNLL14ScoreJobScript(
-        CoNLL14ScoreJobInterface,
+        M2ScoreJobInterface,
+        CoNLL14ScorePathInterface,
         GECScoreJobScript):
     pass
 
 class CoNLL14RerankingScoreJobScript(
-        CoNLL14ScoreJobInterface,
+        M2RerankingScoreJobInterface,
+        CoNLL14ScorePathInterface,
         GECRerankingScoreJobScript):
     pass
 
