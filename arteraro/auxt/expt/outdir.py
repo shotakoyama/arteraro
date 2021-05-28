@@ -34,7 +34,7 @@ class SingleOutDir(PhaseOutDir):
 
 
 class EnsembleOutDir(PhaseOutDir):
-    def __init__(self, dataset, phase, epoch_list):
+    def __init__(self, dataset, phase, epoch_list = None):
         self.epoch_list = epoch_list
         super().__init__(dataset, phase)
 

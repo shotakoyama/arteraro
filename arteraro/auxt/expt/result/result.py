@@ -2,12 +2,17 @@ from arteraro.auxt.util.prod import make_train_indices
 from arteraro.auxt.expt.outdir import SinglePhaseDir
 
 class Result:
-    def __init__(self, outdir):
+    def __init__(self, outdir, filename = None, l = None):
         self.outdir = outdir
+        if filename is None:
+            self.filename = 'result.txt'
+        else:
+            self.filename = filename
+        self.l = l
         self.init_attr(self.read_result())
 
     def get_result_path(self):
-        return self.outdir.make_path('result.txt')
+        return self.outdir.make_path(self.filename)
 
     def read_result(self):
         result_path = self.get_result_path()

@@ -35,6 +35,12 @@ class GLEUResultList(ResultList):
         line = '{}\t{}'.format(max_result, min_result)
         return line
 
+    def show_best(self):
+        num_results = len(self)
+        maximum = max(self)
+        max_result = 'max {}'.format(maximum.gleu)
+        return max_result
+
 
 class GLEUResultListFactory(ResultListFactory):
     def init_result_list(self):

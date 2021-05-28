@@ -19,7 +19,8 @@ class RerankingJobScript(ExptJobScript):
         detokenize = self.config['rerank'].get('detokenize', True)
         max_tokens = self.config['rerank'].get('max_tokens', 10000)
         command = mlm_scoring_command(arch, detokenize, max_tokens)
-        input_path = (self.outdir.make_outdir_path().parent / 'output.yaml').resolve()
+        input_path = (self.outdir.make_outdir_path().parent
+                / 'output.yaml').resolve()
         output_path = self.outdir.make_path('output.yaml')
         self.append('{} \\'.format(command))
         self.append('   < {} \\'.format(input_path))

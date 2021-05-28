@@ -29,8 +29,11 @@ def get_single_test_outdir_list(dataset, valid_result_table):
 
     return outdir_list
 
-def get_ensemble_outdir(dataset, phase, valid_result_table):
-    epoch_indices = get_best_valid_epoch_indices(valid_result_table)
+def get_ensemble_outdir(dataset, phase, valid_result_table = None):
+    if valid_result_table is None:
+        epoch_indices = None
+    else:
+        epoch_indices = get_best_valid_epoch_indices(valid_result_table)
     outdir = EnsembleOutDir(dataset, phase, epoch_indices)
     return outdir
 

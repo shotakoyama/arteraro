@@ -33,6 +33,13 @@ class FScoreResultList(ResultList):
         line = '{}\t{}'.format(max_result, min_result)
         return line
 
+    def show_best(self):
+        num_results = len(self)
+        maximum = max(self)
+        max_result = 'max {} ({}, {})'.format(
+                maximum.f, maximum.p, maximum.r)
+        return max_result
+
 
 class FScoreResultListFactory(ResultListFactory):
     def init_result_list(self):
