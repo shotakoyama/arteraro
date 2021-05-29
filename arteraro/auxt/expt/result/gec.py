@@ -20,16 +20,22 @@ from arteraro.auxt.expt.reranking.util import (
 def show_test_single_result(dataset, valid_result_table,
         result_class, result_list_class):
     test_outdir_list = get_single_test_outdir_list(dataset, valid_result_table)
-    test_result_list = [result_class(outdir) for outdir in test_outdir_list]
-    test_result_list = result_list_class(test_result_list)
+    test_result_list = result_list_class()
+    for outdir in test_outdir_list:
+        try:
+            result = result_class(outdir)
+            test_result_list.append(result)
+        except FileNotFoundError:
+            pass
 
-    for result in test_result_list:
-        line = 'index {} ({}): {}'.format(
-                result.outdir.index,
-                result.outdir.epoch,
-                result.show())
-        print(line)
-    print(test_result_list.show_avg())
+    if test_result_list:
+        for result in test_result_list:
+            line = 'index {} ({}): {}'.format(
+                    result.outdir.index,
+                    result.outdir.epoch,
+                    result.show())
+            print(line)
+        print(test_result_list.show_avg())
 
 def show_ensemble_result(dataset, phase, result_class):
     outdir = get_ensemble_outdir(dataset, phase)
@@ -62,10 +68,11 @@ def show_valid_reranking_result(dataset, result_class,
                 result_list.append(result)
             except FileNotFoundError:
                 pass
-        best_lambda = max(result_list).l
-        line = 'rerank ({}, l={}):\t{}'.format(arch, best_lambda, result_list.show_best())
-        print(line)
-        best_lambda_list.append((arch, best_lambda))
+        if result_list:
+            best_lambda = max(result_list).l
+            line = 'rerank ({}, l={}):\t{}'.format(arch, best_lambda, result_list.show_best())
+            print(line)
+            best_lambda_list.append((arch, best_lambda))
 
     return best_lambda_list
 
