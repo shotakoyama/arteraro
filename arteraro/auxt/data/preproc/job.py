@@ -12,6 +12,8 @@ class PreprocessJobScript(DataJobScript):
     def make_dict_path(self, side):
         if (self.first_index is not None) and (self.first_index != self.index):
             dict_path = '{}/data-bin/dict.{}.txt'.format(self.first_index, side)
+        elif 'preprocess' in self.config:
+            dict_path = self.config['preprocess'].get('{}_dict_path'.format(side), None)
         else:
             dict_path = self.config.get('{}_dict_path'.format(side), None)
 

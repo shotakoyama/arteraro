@@ -49,19 +49,25 @@ def bea19_preproc():
     num_iter = config['iter']
 
     if 'preprocess' in config:
-        first_index = config['preprocess'].get('first_index', 0)
+        if 'src_dict_path' in config['preprocess']:
+            first_index = None
+        else:
+            first_index = config['preprocess'].get('first_index', 0)
     else:
         first_index = 0
 
-    first_script = BEA19PreprocessJobScript(first_index, first_index)
+    if first_index is not None:
+        first_script = BEA19PreprocessJobScript(first_index, first_index)
     script_list = [BEA19PreprocessJobScript(first_index, n)
             for n in range(num_iter)
             if n != first_index]
 
     if check_sub_config():
-        first_sub = PreprocessSubScript([first_script], first=True)
+        if first_index is not None:
+            first_sub = PreprocessSubScript([first_script], first=True)
         rest_sub = PreprocessSubScript(script_list)
     else:
-        first_run = PreprocessRunScript([first_script], first=True)
+        if first_index is not None:
+            first_run = PreprocessRunScript([first_script], first=True)
         rest_run = PReprocessRunScript(script_list)
 
