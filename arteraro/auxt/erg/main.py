@@ -13,6 +13,8 @@ class ErgJobScript(JobScript):
         self.index = index
         with open('config.yaml') as f:
             self.aeg_rules = yaml.safe_load(f)
+        if self.aeg_rules is None: # if config.yaml is empty
+            self.aeg_rules = []
         super().__init__()
 
     def make_path(self):
@@ -40,8 +42,12 @@ class ErgJobScript(JobScript):
         j = self.config['threads']
         L = self.config['lines']
         ratio = self.config['ratio']
-        languages = ':'.join(self.config['languages'])
-        command = parallel_command(j, L, '"OMP_NUM_THREADS=1 erg run en --ratio {} --languages {}"'.format(ratio, languages))
+        command = 'OMP_NUM_THREADS=1 erg run en --ratio {}'.format(ratio)
+        if 'languages' in self.config:
+            languages = ':'.join(self.config['languages'])
+            command += ' --languages {}'.format(languages)
+        command = '"{}"'.format(command)
+        command = parallel_command(j, L, command)
         self.append('zcat {} \\'.format(input_path))
         self.append('   | {} \\'.format(command))
         self.append('   | progress > ${SGE_LOCALDIR}/generated.txt')

@@ -7,8 +7,12 @@ from .fairseq import fairseq_preprocess_command
 
 class BEA19PreprocessJobScript(PreprocessJobScript):
     def make(self):
-        compressed_source = Path('{}/train.src.gz'.format(self.index)).resolve()
-        compressed_target = Path('{}/train.trg.gz'.format(self.index)).resolve()
+        if 'prepared' in self.config['preprocess']:
+            base_path = Path(self.config['preprocess']['prepared']) / str(self.index)
+        else:
+            base_path = Path(str(self.index))
+        compressed_source = str((base_path / 'train.src.gz').resolve())
+        compressed_target = str((base_path / 'train.trg.gz').resolve())
         extracted_source = '${SGE_LOCALDIR}/train.src'
         extracted_target = '${SGE_LOCALDIR}/train.trg'
 

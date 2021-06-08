@@ -46,7 +46,7 @@ def run(main_sub_parsers):
 
     en = sub_parsers.add_parser('en')
     en.add_argument('-c', '--config', default = 'config.yaml')
-    en.add_argument('-r', '--ratio', type=float, default=0.5)
+    en.add_argument('-r', '--ratio', type=float, default=0.0)
     en.add_argument('-l', '--languages', default=None)
     en.set_defaults(handler = command_en_run)
 

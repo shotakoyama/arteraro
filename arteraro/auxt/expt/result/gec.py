@@ -70,7 +70,7 @@ def show_valid_reranking_result(dataset, result_class,
                 pass
         if result_list:
             best_lambda = max(result_list).l
-            line = 'rerank ({}, l={}):\t{}'.format(arch, best_lambda, result_list.show_best())
+            line = 'rerank ({}, l={}, {}):\t{}'.format(arch, best_lambda, len(result_list), result_list.show_best())
             print(line)
             best_lambda_list.append((arch, best_lambda))
 
