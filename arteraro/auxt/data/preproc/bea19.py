@@ -7,7 +7,7 @@ from .fairseq import fairseq_preprocess_command
 
 class BEA19PreprocessJobScript(PreprocessJobScript):
     def make(self):
-        if 'prepared' in self.config['preprocess']:
+        if ('preprocess' in self.config) and ('prepared' in self.config['preprocess']):
             base_path = Path(self.config['preprocess']['prepared']) / str(self.index)
         else:
             base_path = Path(str(self.index))
