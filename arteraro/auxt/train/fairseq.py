@@ -12,6 +12,9 @@ class FairseqTrainCommand(list):
     def log(self):
         self += ['--log-interval 1', '--log-format simple']
 
+    def save_interval(self, interval):
+        self.append('--save-interval {}'.format(interval))
+
     def fp16(self):
         self.append('--fp16')
 

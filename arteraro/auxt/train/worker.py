@@ -57,6 +57,8 @@ class WorkerJobScript(JobScript):
 
         command.seed(self.config['train']['seed_list'][self.index])
         command.log()
+        if 'save_interval' in self.config['train']:
+            command.save_interval(self.config['train']['save_interval'])
         command.fp16()
         if self.config.get('no_c10d', False):
             command.no_c10d()
