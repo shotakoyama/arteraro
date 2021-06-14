@@ -1,5 +1,9 @@
 # en_erg_script
 
+`en_erg_script` is deprecated.
+
+Please use `auxt`.
+
 ## how to use?
 
 ### command line

@@ -17,24 +17,24 @@ word
 words worded wording wordless
 ```
 
-### `afiksilo_prepare`
+### `afiksilo-prepare`
 
 You can get word frequency data from standard inputs.
 Then, the frequency data are saved.
 
 ```
-afiksilo_prepare frequency.tsv < data.txt
+afiksilo-prepare frequency.tsv < data.txt
 ```
 
-### `afiksilo_make_model`
+### `afiksilo-make_model`
 
-You can make model using frequency data that `afiksilo_prepare` has made.
+You can make model using frequency data that `afiksilo-prepare` has made.
 This model can be used for `afiksilo` command.
-Furthermore, this model is used in an error generating rule `comfusion`.
-This rule doesn't use `afiksilo` as library.
+Furthermore, this model is used in an error-generating module `confusion`.
+This rule does not use `afiksilo` as library.
 You can see detail of `confusion` from [arteraro/erarigilo/en/word_selection/confusion.py](https://github.com/nymwa/arteraro/blob/main/arteraro/erarigilo/en/word_selection/confusion.py).
 
 ```
-afiksilo_make_model path/to/frequency.tsv path/to/afiksilo_dict.pickle --min-freq 1000 --min-length 3
+afiksilo-make-model path/to/frequency.tsv path/to/afiksilo_dict.pickle --min-freq 1000 --min-length 3
 ```
 

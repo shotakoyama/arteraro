@@ -1,5 +1,9 @@
 # fa_script
 
+`fa_scrit` is deprecated.
+
+DO NOT USE `fa_script`.
+
 Fairseq training script with Artificial error generation
 
 You should see

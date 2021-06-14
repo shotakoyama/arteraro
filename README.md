@@ -33,15 +33,15 @@ You can see at [arteraro/erarigilo/README.md](https://github.com/nymwa/arteraro/
 - Python version >= 3.8
 	- fairseq v0.10.0~2 seems to fail with python 3.9 because of change of things about typing.
 	- So, if you want to use python 3.9, please use fairseq of the latest commit.
-- PyTorch version >= 1.7.0
+- PyTorch version >= 1.8.0
 
 #### recommended
-- CUDA version: 10.2
-- cudnn version: 8.0.2
-- nccl version: 2.7.8-1
+- CUDA version: 11.1
+- cudnn version: 8.2.0
+- nccl version: 2.8.4-1
 - gdrcopy version: 2.0
-- openmpi version: 4.0.3
-- fairseq version: 0.10.1
+- openmpi version: 4.0.5
+- fairseq version: 0.10.2
 
 ### 2. install packages using `pip install requirements.txt`
 
@@ -49,11 +49,11 @@ You must use SpaCy 2.3. Do not use SpaCy v1 or SpaCy v3.
 
 ### 3. install `fairseq`
 
-If you want to reproduce our experiments in the same environment that we used, you must use `fairseq==0.10.1`.
-However, `fairseq==0.10.1` has a bug of using multiple nodes, and you must rewrite one line to run experiments using multiple nodes.
+If you want to reproduce our experiments in the same environment that we used, you must use `fairseq==0.10.2`.
+However, `fairseq==0.10.2` has a bug of using multiple nodes, and you must rewrite one line to run experiments using multiple nodes.
 This bug seems to be corrected in the latest commit. You can also use the latest fairseq.
 
-To install `fairseq==0.10.1`, you have to run `git clone https://github.com/pytorch/fairseq.git -b v0.10.1`, and install by `pip install -e .`.
+To install `fairseq==0.10.2`, you have to run `git clone https://github.com/pytorch/fairseq.git -b v0.10.2`, and install by `pip install -e .`.
 
 Then, you have to rewrite a line in `fairseq/distributed_utils.py` like below, to run fairseq using multiple nodes.
 
