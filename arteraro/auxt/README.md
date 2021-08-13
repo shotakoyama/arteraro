@@ -2,7 +2,7 @@
 
 `auxt` automatically generates shell codes for the experiments.
 
-`auxt` derives from Frenchized (?) Esperanto word aŭtomatigi.
+`auxt` derives from Esperanto word aŭtomatigi.
 
 You can see more details using auxt in arterarejo.
 

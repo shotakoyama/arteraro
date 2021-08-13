@@ -1,6 +1,6 @@
 # arteraro
 
-Arteraro is derived from Esperanto and means "artificial error".
+Arteraro is derived from Esperanto and means "artificial error."
 
 - ニューラル文法誤り訂正のための多様な規則を用いる人工誤り生成 (言語処理学会第27回年次大会)
 	- Please use `v1.0.1` to redroduce results of this paper.
@@ -31,7 +31,7 @@ You can see at [arteraro/erarigilo/README.md](https://github.com/nymwa/arteraro/
 
 #### requirements
 - Python version >= 3.8
-	- fairseq v0.10.0~2 seems to fail with python 3.9 because of change of things about typing.
+	- fairseq v0.10.0~2 seems to fail with python 3.9 because of change about typing.
 	- So, if you want to use python 3.9, please use fairseq of the latest commit.
 - PyTorch version >= 1.8.0
 
