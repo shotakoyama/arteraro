@@ -6,6 +6,9 @@ class FairseqTrainCommand(list):
     def restore_file(self, restore_file):
         self.append('--restore-file {}'.format(restore_file))
 
+    def save_dir(self, path):
+        self.append('--save-dir {}'.format(path))
+
     def seed(self, seed):
         self.append('--seed {}'.format(seed))
 

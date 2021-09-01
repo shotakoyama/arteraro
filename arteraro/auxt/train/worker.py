@@ -21,6 +21,12 @@ class WorkerJobScript(JobScript):
     def p_copy(self):
         return self.config['train'].get('copy_data_bin', False)
 
+    def p_tmp_save(self):
+        return self.config['train'].get('tmp_save_dir', False)
+
+    def make_tmp_save_dir(self):
+        return Path('${SGE_LOCALDIR}/checkpoints')
+
     def make_data_bin_path(self, data_path, index):
         if self.p_copy():
             path = '${{SGE_LOCALDIR}}/{}/data-bin'.format(index)
@@ -54,6 +60,9 @@ class WorkerJobScript(JobScript):
 
         if 'restore_file' in self.config['train']:
             command.restore_file(str(Path(self.config['train']['restore_file'][self.index]).resolve()))
+
+        if self.p_tmp_save():
+            command.save_dir(self.make_tmp_save_dir())
 
         command.seed(self.config['train']['seed_list'][self.index])
         command.log()
