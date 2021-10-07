@@ -2,13 +2,12 @@
 
 Arteraro is derived from Esperanto and means "artificial error."
 
-- ニューラル文法誤り訂正のための多様な規則を用いる人工誤り生成 (言語処理学会第27回年次大会)
-	- Please use `v1.0.1` to redroduce results of this paper.
-	- 誤り生成規則は `v1.0.1` のものを使用しています．
-	- 論文中のCoNLL-2014データセットに関するスコアに誤りがありましたので，修正原稿([リンク](https://github.com/nymwa/anlp_nlp2021_aeg/blob/main/nlp2021.pdf))を公開しました．CoNLL-14の値に関してはこちらを参照ください．
-	- また，論文中に載せられなかった実験結果や分析などを[こちら](https://github.com/nymwa/anlp_nlp2021_aeg/blob/main/analysis.pdf)で公開しています．こちらも参照ください．
-	- モデルによる訂正の出力は[こちら](https://github.com/nymwa/anlp_nlp2021_aeg/tree/main/outputs)に公開しました．
-	- 学習済みモデル（1モデル）を使って Google Colaboratory で文法誤り訂正を実行できる [Jupyter Notebook](https://gist.github.com/nymwa/982e92c4810f0ee31886378052af1459) を公開しました．
+- Various Errors Improve Neural Grammatical Error Correction (PACLIC 2021)
+	- Please use `v2.0.0` to reproduce results of this paper.
+	- paper, outputs and analyses
+		- `to appear`
+	- How to reproduce?
+		- Please see [nymwa/arterarejo2](https://github.com/nymwa/arterarejo2)
 	- You can download models for artificial error generation.
 		- [afiksilo_dict.pickle](https://drive.google.com/file/d/1RBuini-cII61W2Zdgy6yDBerSnyTFYT0/view?usp=sharing)
 			- dictionary for afiksilo
@@ -16,6 +15,13 @@ Arteraro is derived from Esperanto and means "artificial error."
 			- dictionary for ortobruilo
 		- [score.dat](https://drive.google.com/file/d/1NiRwzxLoM4i7IvNYNptoHCVqPVHHG6Mq/view?usp=sharing)
 			- model for falsliter
+- ニューラル文法誤り訂正のための多様な規則を用いる人工誤り生成 (言語処理学会第27回年次大会)
+	- Please use `v1.0.1` to redroduce results of this paper.
+	- 誤り生成規則は `v1.0.1` のものを使用しています．
+	- 論文中のCoNLL-2014データセットに関するスコアに誤りがありましたので，修正原稿([リンク](https://github.com/nymwa/anlp_nlp2021_aeg/blob/main/nlp2021.pdf))を公開しました．CoNLL-14の値に関してはこちらを参照ください．
+	- また，論文中に載せられなかった実験結果や分析などを[こちら](https://github.com/nymwa/anlp_nlp2021_aeg/blob/main/analysis.pdf)で公開しています．こちらも参照ください．
+	- モデルによる訂正の出力は[こちら](https://github.com/nymwa/anlp_nlp2021_aeg/tree/main/outputs)に公開しました．
+	- 学習済みモデル（1モデル）を使って Google Colaboratory で文法誤り訂正を実行できる [Jupyter Notebook](https://gist.github.com/nymwa/982e92c4810f0ee31886378052af1459) を公開しました．
 	- paper, outputs and analyses
 		- Please see [nymwa/anlp_nlp2021_aeg](https://github.com/nymwa/anlp_nlp2021_aeg)
 	- How to reproduce?
