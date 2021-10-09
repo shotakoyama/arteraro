@@ -5,7 +5,9 @@ Arteraro is derived from Esperanto and means "artificial error."
 - Various Errors Improve Neural Grammatical Error Correction (PACLIC 2021)
 	- Please use `v2.0.0` to reproduce results of this paper.
 	- paper, outputs and analyses
-		- `to appear`
+		- [PACLIC_2021_Various](https://github.com/nymwa/PACLIC_2021_Various)
+	- pretrained models
+		- [163M_pretrain](https://github.com/nymwa/163M_pretrain)
 	- How to reproduce?
 		- Please see [nymwa/arterarejo2](https://github.com/nymwa/arterarejo2)
 	- You can download models for artificial error generation.
