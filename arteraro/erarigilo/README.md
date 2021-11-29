@@ -1,5 +1,13 @@
 # erarigilo
 
+The development of erarigilo was moved to [nymwa/erarigilo](https://github.com/nymwa/erarigilo).
+
+New erarigilo is updated to use SpaCy v3.
+
+The development of erarigilo here will not be done.
+
+---
+
 "erarigilo" derives from Esperanto, and means "error-making tool".
 
 More details for error generating rules are under `en`.
