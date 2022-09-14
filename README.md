@@ -13,11 +13,11 @@ Please feel free to comment! Any issue is welcome. Please use this code Arteraro
 	- How to reproduce?
 		- Please see [nymwa/arterarejo2](https://github.com/nymwa/arterarejo2)
 	- You can download models for artificial error generation.
-		- [afiksilo_dict.pickle](https://drive.google.com/file/d/1RBuini-cII61W2Zdgy6yDBerSnyTFYT0/view?usp=sharing)
+		- [afiksilo_dict.pickle](https://drive.google.com/file/d/1078gRbXeAR8AcPKVQ67bMnCYumMBxvsd/view?usp=sharing)
 			- dictionary for afiksilo
-		- [orto_dict.pickle](https://drive.google.com/file/d/1qU-uywBWLtN4DQ_QUIevRRKPluPrpx1M/view?usp=sharing)
+		- [orto_dict.pickle](https://drive.google.com/file/d/1DTkcujzZRqH7W9UCR2iTh17nySeHEaG7/view?usp=sharing)
 			- dictionary for ortobruilo
-		- [score.dat](https://drive.google.com/file/d/1NiRwzxLoM4i7IvNYNptoHCVqPVHHG6Mq/view?usp=sharing)
+		- [score.dat](https://drive.google.com/file/d/1xGxDZgSN_J0_0Gnm1vo8xhqjk7VIoYMq/view?usp=sharing)
 			- model for falsliter
 - ニューラル文法誤り訂正のための多様な規則を用いる人工誤り生成 (言語処理学会第27回年次大会)
 	- Please use `v1.0.1` to redroduce results of this paper.
