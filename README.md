@@ -17,7 +17,7 @@ Please feel free to comment! Any issue is welcome. Please use this code Arteraro
 			- dictionary for afiksilo
 		- [orto_dict.pickle](https://drive.google.com/file/d/1MMi_BzAf1G0EcymjXHU86VhD0fuuvcTw/view?usp=sharing)
 			- dictionary for ortobruilo
-		- [score.dat](https://drive.google.com/file/d/1MMi_BzAf1G0EcymjXHU86VhD0fuuvcTw/view?usp=sharing)
+		- [score.dat](https://drive.google.com/file/d/1f2vvLFWsprfA3xPLwLdzmG2goaZ9sPtl/view?usp=sharing)
 			- model for falsliter
 - ニューラル文法誤り訂正のための多様な規則を用いる人工誤り生成 (言語処理学会第27回年次大会)
 	- Please use `v1.0.1` to redroduce results of this paper.
